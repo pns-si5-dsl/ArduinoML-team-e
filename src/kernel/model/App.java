@@ -1,4 +1,6 @@
 package kernel.model;
+import kernel.generator.Visitable;
 
-public class App {
+public class App implements Visitable, NamedElement {
+    //TODO
 }
