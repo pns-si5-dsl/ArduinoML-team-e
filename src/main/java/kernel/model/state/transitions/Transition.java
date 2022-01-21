@@ -1,9 +1,11 @@
 package kernel.model.state.transitions;
+
+
 import kernel.generator.Visitable;
 import kernel.generator.Visitor;
 import kernel.model.state.State;
 
-public class Transition implements Visitable {
+public class Transition extends Check implements Visitable {
     private State next;
 
     public State getNext() {

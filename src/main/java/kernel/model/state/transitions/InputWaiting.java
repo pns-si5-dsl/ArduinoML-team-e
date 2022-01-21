@@ -1,14 +1,14 @@
-package kernel.model.state.actions;
+package kernel.model.state.transitions;
+
 import kernel.generator.Visitable;
 import kernel.generator.Visitor;
-import kernel.model.component.Actuator;
+import kernel.model.component.Sensor;
 import kernel.model.values.SIGNAL;
 
-public class OutputAction implements Visitable {
+public class InputWaiting extends Check implements Visitable {
     private SIGNAL value;
-    private Actuator actuator;
+    private Sensor sensor;
 
-	
     @Override
     public void accept(Visitor<?> visitor) {
         visitor.visit(this);
@@ -22,11 +22,11 @@ public class OutputAction implements Visitable {
         this.value = value;
     }
 
-    public Actuator getActuator() {
-        return actuator;
+    public Sensor getSensor() {
+        return sensor;
     }
 
-    public void setActuator(Actuator actuator) {
-        this.actuator = actuator;
+    public void setSensor(Sensor sensor) {
+        this.sensor = sensor;
     }
 }

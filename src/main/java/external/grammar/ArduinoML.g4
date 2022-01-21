@@ -1,4 +1,4 @@
-grammar arduinoML;
+grammar ArduinoML;
 
 
 // RULES
@@ -9,19 +9,19 @@ main: definitions states ;
 definitions: definition*;
 definition : sensor | actuator;
 
-sensor     : 'Sensor ' IDENTIFIER '=' PIN;
+sensor     : 'Sensor ' id=IDENTIFIER '=' pin=PIN;
 
-actuator   : 'Actuator ' IDENTIFIER '=' PIN;
+actuator   : 'Actuator ' id=IDENTIFIER '=' pin=PIN;
 
 
 // STATES
 states    : state*;
-state     : IDENTIFIER '{' (action|transition)+ '}';
+state     : id=IDENTIFIER '{' (action|transition)+ '}';
 
-action    : IDENTIFIER 'is' STATE;
+action    : id=IDENTIFIER 'is' power=STATE;
 
-transition: 'when' condition 'then' IDENTIFIER;
-condition : IDENTIFIER 'is' STATE;
+transition: 'when' condition 'then' to=IDENTIFIER;
+condition : id=IDENTIFIER 'is' power=STATE;
 
 
 // FINALS

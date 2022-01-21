@@ -1,0 +1,25 @@
+T__0=1
+T__1=2
+T__2=3
+T__3=4
+T__4=5
+T__5=6
+T__6=7
+T__7=8
+IDENTIFIER=9
+PIN=10
+STATE=11
+LOWERCASE=12
+UPPERCASE=13
+NUMBER=14
+NEWLINE=15
+WHITE_SPACES=16
+COMMENTS=17
+'Sensor '=1
+'='=2
+'Actuator '=3
+'{'=4
+'}'=5
+'is'=6
+'when'=7
+'then'=8

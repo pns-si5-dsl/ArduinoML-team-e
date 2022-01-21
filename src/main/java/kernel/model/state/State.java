@@ -1,4 +1,5 @@
 package kernel.model.state;
+
 import kernel.generator.Visitable;
 import kernel.generator.Visitor;
 import kernel.model.state.actions.Action;
