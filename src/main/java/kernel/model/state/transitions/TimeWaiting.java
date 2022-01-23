@@ -2,7 +2,7 @@ package kernel.model.state.transitions;
 import kernel.generator.Visitable;
 import kernel.generator.Visitor;
 
-public class TimeWaiting extends Check implements Visitable {
+public class TimeWaiting extends Transition implements Visitable {
     /**
      * time in ms to wait
      */

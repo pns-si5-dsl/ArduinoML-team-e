@@ -5,7 +5,7 @@ import kernel.generator.Visitor;
 import kernel.model.component.Sensor;
 import kernel.model.values.SIGNAL;
 
-public class InputWaiting extends Check implements Visitable {
+public class InputWaiting extends Transition implements Visitable {
     private SIGNAL value;
     private Sensor sensor;
 

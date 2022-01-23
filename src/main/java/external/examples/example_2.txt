@@ -1,0 +1,19 @@
+Sensor l on PIN0
+Actuator b on PIN10
+
+initial stopped {
+    l is LOW
+    when b is HIGH then blink
+}
+
+blink {
+    l is HIGH
+    when b is HIGH then stopped
+    after 100ms then blink2
+}
+
+blink2 {
+    l is LOW
+    when b is HIGH then stopped
+    after 100ms then blink
+}

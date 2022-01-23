@@ -11,6 +11,7 @@ import java.util.List;
 public class State implements Visitable {
     private String name;
     private List<Action> actions = new LinkedList<>();
+    private List<Transition> transitions = new LinkedList<>();
 
     public List<Transition> getTransitions() {
         return transitions;
@@ -19,8 +20,6 @@ public class State implements Visitable {
     public void setTransitions(List<Transition> transitions) {
         this.transitions = transitions;
     }
-
-    private List<Transition> transitions;
 
     public String getName() {
         return name;

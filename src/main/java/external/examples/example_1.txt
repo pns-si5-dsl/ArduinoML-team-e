@@ -1,0 +1,17 @@
+// My program name
+
+Actuator button0 on PIN0 // actuator on PIN0 on the hardware
+Actuator button1 on PIN1 // actuator on PIN1 on the hardware
+Sensor led0 on PIN3      // sensor on PIN3 on the hardware
+
+// the initial state of the program
+initial state1 {
+    led0 is LOW                      // power OFF led0
+    when button0 is HIGH then state2 // switch to state 2
+}
+
+state2 {
+    led0 is HIGH                     // power ON led0
+    when button1 is HIGH then state1 // switch to state 1
+    after 5000ms then state1         // automatically switch to state 1
+}
