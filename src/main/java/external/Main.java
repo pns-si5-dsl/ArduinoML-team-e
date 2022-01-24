@@ -26,9 +26,8 @@ public class Main {
     }
 
     private static CharStream getCharStream(String[] args) throws IOException {
-        //if (args.length < 1) throw new RuntimeException("no input file");
-        //Path input = Paths.get(new File(args[0]).toURI());
-        Path input = Paths.get(new File("/home/ludovic/Bureau/Ecole/SI-5/DSL/ArduinoML-team-e/src/main/java/external/examples/example_1.txt").toURI());
+        if (args.length < 1) throw new RuntimeException("no input file");
+        Path input = Paths.get(new File(args[0]).toURI());
         System.out.println("Using input file: " + input);
         return CharStreams.fromPath(input);
     }
