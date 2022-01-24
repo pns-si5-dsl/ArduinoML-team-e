@@ -3,6 +3,8 @@ package external;
 import external.antlr.ArduinoMLLexer;
 import external.antlr.ArduinoMLParser;
 import external.arduinoML.builder.ModelBuilder;
+import kernel.generator.Generator;
+import kernel.generator.Visitor;
 import kernel.model.App;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStream;
@@ -22,7 +24,7 @@ public class Main {
 
         CharStream stream = getCharStream(args);
         App theApp = buildModel(stream);
-        //exportToCode(theApp);
+        exportToCode(theApp);
     }
 
     private static CharStream getCharStream(String[] args) throws IOException {
@@ -49,10 +51,10 @@ public class Main {
         return builder.build();
     }
 
-/*    private static void exportToCode(App theApp) {
-        Visitor codeGenerator = new ToWiring();
+    private static void exportToCode(App theApp) {
+        Visitor<StringBuffer> codeGenerator = new Generator();
         theApp.accept(codeGenerator);
-        System.out.println(codeGenerator.getResult());
-    }*/
+        System.out.println(codeGenerator.getGeneratedCode());
+    }
 
 }

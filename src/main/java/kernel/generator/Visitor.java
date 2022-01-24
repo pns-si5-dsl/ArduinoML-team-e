@@ -20,4 +20,7 @@ public interface Visitor<T> {
     void visit(Transition transition);
     void visit(InputWaiting check);
     void visit(TimeWaiting noCheck);
+
+    // The Generator have to implement a method that return a results => The generated code
+    T getGeneratedCode();
 }

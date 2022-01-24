@@ -1,8 +1,9 @@
 package kernel.model.component;
 
+import kernel.generator.Visitable;
 import kernel.model.NamedElement;
 
-public abstract class Brick implements NamedElement {
+public abstract class Brick implements NamedElement, Visitable {
     private String name;
     private int pin;
 

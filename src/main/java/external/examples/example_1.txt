@@ -1,8 +1,8 @@
 // My program name
 
-Actuator button0 on PIN0 // actuator on PIN0 on the hardware
-Actuator button1 on PIN1 // actuator on PIN1 on the hardware
-Sensor led0 on PIN3      // sensor on PIN3 on the hardware
+Sensor button0 on PIN0 // actuator on PIN0 on the hardware
+Sensor button1 on PIN1 // actuator on PIN1 on the hardware
+Actuator led0 on PIN3      // sensor on PIN3 on the hardware
 
 // the initial state of the program
 initial state1 {
