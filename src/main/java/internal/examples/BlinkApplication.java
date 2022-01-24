@@ -1,12 +1,12 @@
 package internal.examples;
 
-import internal.annotations.Output;
 import internal.annotations.ArduinoML;
 import internal.annotations.Input;
+import internal.annotations.Output;
 import internal.annotations.State;
+import internal.builders.EmbeddedApplication;
 import internal.models.Actuator;
 import internal.models.Sensor;
-import internal.builders.EmbeddedApplication;
 
 import static internal.models.Signal.HIGH;
 import static internal.models.Signal.LOW;
