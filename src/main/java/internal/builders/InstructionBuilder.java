@@ -1,15 +1,14 @@
 package internal.builders;
 
-import kernel.model.App;
 import kernel.model.component.Actuator;
 import kernel.model.state.actions.OutputAction;
 import kernel.model.values.SIGNAL;
 
 public class InstructionBuilder {
     /**
-     * The application under construction.
+     * The application builder.
      */
-    private App application;
+    private ApplicationBuilder applicationBuilder;
 
     /**
      * The actuator to be controlled.
@@ -18,11 +17,11 @@ public class InstructionBuilder {
 
     /**
      * Constructs an instruction builder.
-     * @param application The application under construction.
+     * @param applicationBuilder The application builder.
      * @param actuator The actuator to be controlled.
      */
-    public InstructionBuilder(App application, Actuator actuator) {
-        this.application = application;
+    public InstructionBuilder(ApplicationBuilder applicationBuilder, Actuator actuator) {
+        this.applicationBuilder = applicationBuilder;
         this.actuator = actuator;
     }
 
@@ -34,6 +33,6 @@ public class InstructionBuilder {
         OutputAction action = new OutputAction();
         action.setActuator(actuator);
         action.setValue(signal);
-        // TODO: Add the action to the state being built.
+        applicationBuilder.addActionToCurrentState(action);
     }
 }

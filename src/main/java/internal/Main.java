@@ -9,8 +9,7 @@ import java.util.Optional;
 public class Main {
     public static void main(String[] args) {
         // Build.
-        BlinkApplication embeddedApp = new BlinkApplication();
-        App app = embeddedApp.build();
+        App app = new BlinkApplication().build();
 
         // Print.
         System.out.println("Name = " + app.getName());
@@ -21,10 +20,14 @@ public class Main {
             "on pin " + brick.getPin()
         ));
         System.out.println("States = ");
-        app.getStates().forEach(state -> System.out.println("- " + state.getName()));
-        System.out.println("Initial = ");
+        app.getStates().forEach(state -> {
+            System.out.println("- " + state.getName());
+            state.getActions().forEach(action -> {
+                System.out.println("--> " + action);
+            });
+            state.getTransitions().forEach(transition -> System.out.println("--> " + transition));
+        });
+        System.out.print("Initial = ");
         Optional.ofNullable(app.getInitial()).ifPresent(state -> System.out.println(state.getName()));
-        System.out.println("Code = ");
-        System.out.println(embeddedApp.generateCode());
     }
 }

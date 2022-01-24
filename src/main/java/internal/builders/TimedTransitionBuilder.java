@@ -1,13 +1,12 @@
 package internal.builders;
 
-import kernel.model.App;
 import kernel.model.state.transitions.TimeWaiting;
 
 public class TimedTransitionBuilder {
     /**
-     * The application under construction.
+     * The application builder.
      */
-    private App application;
+    private ApplicationBuilder applicationBuilder;
 
     /**
      * The timeout in milliseconds.
@@ -16,11 +15,11 @@ public class TimedTransitionBuilder {
 
     /**
      * Constructs a timed transition builder.
-     * @param application The application under construction.
+     * @param applicationBuilder The application builder.
      * @param timeout The timeout in milliseconds.
      */
-    public TimedTransitionBuilder(App application, int timeout) {
-        this.application = application;
+    public TimedTransitionBuilder(ApplicationBuilder applicationBuilder, int timeout) {
+        this.applicationBuilder = applicationBuilder;
         this.timeout = timeout;
     }
 
@@ -31,6 +30,6 @@ public class TimedTransitionBuilder {
     public void then(String state) {
         TimeWaiting transition = new TimeWaiting();
         transition.setTimeout(timeout);
-        // TODO: Set the next state and add the transition to the state being built.
+        applicationBuilder.addTransitionToCurrentState(transition, state);
     }
 }

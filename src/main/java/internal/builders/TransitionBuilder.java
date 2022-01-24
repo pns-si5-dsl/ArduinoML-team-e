@@ -1,15 +1,14 @@
 package internal.builders;
 
-import kernel.model.App;
 import kernel.model.component.Sensor;
 import kernel.model.state.transitions.InputWaiting;
 import kernel.model.values.SIGNAL;
 
 public class TransitionBuilder {
     /**
-     * The application under construction.
+     * The application builder.
      */
-    private App application;
+    private ApplicationBuilder applicationBuilder;
 
     /**
      * The sensor to be monitored.
@@ -23,12 +22,12 @@ public class TransitionBuilder {
 
     /**
      * Constructs a transition builder.
-     * @param application The application under construction.
+     * @param applicationBuilder The application builder.
      * @param sensor The sensor to be monitored.
      * @param signal The signal value that triggers the transition.
      */
-    public TransitionBuilder(App application, Sensor sensor, SIGNAL signal) {
-        this.application = application;
+    public TransitionBuilder(ApplicationBuilder applicationBuilder, Sensor sensor, SIGNAL signal) {
+        this.applicationBuilder = applicationBuilder;
         this.sensor = sensor;
         this.signal = signal;
     }
@@ -41,6 +40,6 @@ public class TransitionBuilder {
         InputWaiting transition = new InputWaiting();
         transition.setSensor(sensor);
         transition.setValue(signal);
-        // TODO: Set the next state and add the transition to the state being built.
+        applicationBuilder.addTransitionToCurrentState(transition, state);
     }
 }

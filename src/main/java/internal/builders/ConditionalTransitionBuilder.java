@@ -1,14 +1,13 @@
 package internal.builders;
 
-import kernel.model.App;
 import kernel.model.component.Sensor;
 import kernel.model.values.SIGNAL;
 
 public class ConditionalTransitionBuilder {
     /**
-     * The application under construction.
+     * The application builder.
      */
-    private App application;
+    private ApplicationBuilder applicationBuilder;
 
     /**
      * The sensor to be monitored.
@@ -17,11 +16,11 @@ public class ConditionalTransitionBuilder {
 
     /**
      * Constructs a conditional transition builder.
-     * @param application The application under construction.
+     * @param applicationBuilder The application builder.
      * @param sensor The sensor to be monitored.
      */
-    public ConditionalTransitionBuilder(App application, Sensor sensor) {
-        this.application = application;
+    public ConditionalTransitionBuilder(ApplicationBuilder applicationBuilder, Sensor sensor) {
+        this.applicationBuilder = applicationBuilder;
         this.sensor = sensor;
     }
 
@@ -31,6 +30,6 @@ public class ConditionalTransitionBuilder {
      * @return A builder to complete the transition.
      */
     public TransitionBuilder is(SIGNAL signal) {
-        return new TransitionBuilder(application, sensor, signal);
+        return new TransitionBuilder(applicationBuilder, sensor, signal);
     }
 }
