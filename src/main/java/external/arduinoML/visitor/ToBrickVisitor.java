@@ -8,8 +8,6 @@ import kernel.model.component.Sensor;
 
 public class ToBrickVisitor extends ArduinoMLBaseVisitor<Brick> {
 
-
-
     @Override
     public Brick visitSensor(ArduinoMLParser.SensorContext ctx) {
         Sensor sensor = new Sensor();

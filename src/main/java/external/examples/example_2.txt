@@ -1,5 +1,5 @@
-Sensor l on PIN0
-Actuator b on PIN10
+Actuator l on PIN0
+Sensor b on PIN10
 
 initial stopped {
     l is LOW

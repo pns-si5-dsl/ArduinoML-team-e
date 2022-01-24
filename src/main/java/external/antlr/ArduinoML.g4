@@ -1,7 +1,7 @@
 grammar ArduinoML;
 
 
-program: (definition|state)* EOF;
+program: definition* state* EOF;
 
 // DEFINITIONS
 definition      : 'Sensor '   id=ID 'on' pin=PIN                  #sensor
