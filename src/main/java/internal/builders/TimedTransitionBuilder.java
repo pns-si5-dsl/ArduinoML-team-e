@@ -6,12 +6,12 @@ public class TimedTransitionBuilder {
     /**
      * The application builder.
      */
-    private ApplicationBuilder applicationBuilder;
+    private final ApplicationBuilder applicationBuilder;
 
     /**
      * The timeout in milliseconds.
      */
-    private int timeout;
+    private final int timeout;
 
     /**
      * Constructs a timed transition builder.

@@ -8,17 +8,17 @@ public class TransitionBuilder {
     /**
      * The application builder.
      */
-    private ApplicationBuilder applicationBuilder;
+    private final ApplicationBuilder applicationBuilder;
 
     /**
      * The sensor to be monitored.
      */
-    private Sensor sensor;
+    private final Sensor sensor;
 
     /**
      * The signal value that triggers the transition.
      */
-    private SIGNAL signal;
+    private final SIGNAL signal;
 
     /**
      * Constructs a transition builder.

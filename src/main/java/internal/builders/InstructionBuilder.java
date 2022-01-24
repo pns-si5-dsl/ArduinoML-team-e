@@ -8,12 +8,12 @@ public class InstructionBuilder {
     /**
      * The application builder.
      */
-    private ApplicationBuilder applicationBuilder;
+    private final ApplicationBuilder applicationBuilder;
 
     /**
      * The actuator to be controlled.
      */
-    private Actuator actuator;
+    private final Actuator actuator;
 
     /**
      * Constructs an instruction builder.
