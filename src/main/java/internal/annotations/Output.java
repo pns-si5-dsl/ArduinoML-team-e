@@ -1,8 +1,12 @@
 package internal.annotations;
 
-import kernel.model.values.SIGNAL;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
 public @interface Output {
-    int pin();
-    SIGNAL init();
+    int pin() default -1;
 }
