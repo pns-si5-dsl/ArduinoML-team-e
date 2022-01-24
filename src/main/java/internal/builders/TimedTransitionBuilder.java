@@ -1,19 +1,36 @@
 package internal.builders;
 
 import kernel.model.App;
+import kernel.model.state.transitions.TimeWaiting;
 
 public class TimedTransitionBuilder {
+    /**
+     * The application under construction.
+     */
     private App application;
-    private long millis;
-    private String state;
 
-    public TimedTransitionBuilder(App application, long millis) {
+    /**
+     * The timeout in milliseconds.
+     */
+    private int timeout;
+
+    /**
+     * Constructs a timed transition builder.
+     * @param application The application under construction.
+     * @param timeout The timeout in milliseconds.
+     */
+    public TimedTransitionBuilder(App application, int timeout) {
         this.application = application;
-        this.millis = millis;
+        this.timeout = timeout;
     }
 
+    /**
+     * Define the target state of the transition.
+     * @param state The target state of the transition.
+     */
     public void then(String state) {
-        this.state = state;
-        // TODO: Add the timed transition to the application.
+        TimeWaiting transition = new TimeWaiting();
+        transition.setTimeout(timeout);
+        // TODO: Set the next state and add the transition to the state being built.
     }
 }

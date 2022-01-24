@@ -2,6 +2,7 @@ package internal;
 
 import internal.examples.BlinkApplication;
 import kernel.model.App;
+import kernel.model.component.Sensor;
 
 import java.util.Optional;
 
@@ -14,7 +15,11 @@ public class Main {
         // Print.
         System.out.println("Name = " + app.getName());
         System.out.println("Bricks = ");
-        app.getBricks().forEach(brick -> System.out.println("- " + brick.getName() + " on pin " + brick.getPin()));
+        app.getBricks().forEach(brick -> System.out.println(
+            "- " + (brick instanceof Sensor ? "Sensor" : "Actuator") + ": " +
+            "'" + brick.getName() + "' " +
+            "on pin " + brick.getPin()
+        ));
         System.out.println("States = ");
         app.getStates().forEach(state -> System.out.println("- " + state.getName()));
         System.out.println("Initial = ");

@@ -5,11 +5,8 @@ import internal.annotations.Input;
 import internal.annotations.Output;
 import internal.annotations.State;
 import internal.builders.EmbeddedApplication;
-import internal.models.Actuator;
-import internal.models.Sensor;
-
-import static internal.models.Signal.HIGH;
-import static internal.models.Signal.LOW;
+import kernel.model.component.Actuator;
+import kernel.model.component.Sensor;
 
 @ArduinoML()
 public class BlinkApplication extends EmbeddedApplication {
