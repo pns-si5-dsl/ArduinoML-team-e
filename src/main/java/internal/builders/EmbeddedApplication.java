@@ -17,15 +17,15 @@ public class EmbeddedApplication {
     }
 
     public InstructionBuilder set(Actuator actuator) {
-        return new InstructionBuilder(actuator);
+        return new InstructionBuilder(application, actuator);
     }
 
     public TimedTransitionBuilder after(long millis) {
-        return new TimedTransitionBuilder(millis);
+        return new TimedTransitionBuilder(application, millis);
     }
 
     public ConditionalTransitionBuilder when(Sensor sensor) {
-        return new ConditionalTransitionBuilder(sensor);
+        return new ConditionalTransitionBuilder(application, sensor);
     }
 
     private void initApplication() {
@@ -56,7 +56,6 @@ public class EmbeddedApplication {
 
     private void initStates() {
         // TODO: Detect state methods, make them public and run them to build the states using the builders.
-        // For this purpose, we must pass a reference to the application to the builders.
     }
 
     public App build() {
