@@ -31,7 +31,7 @@ public class BlinkApplication extends EmbeddedApplication {
 
     @State()
     void blink2() {
-        set(led).to(HIGH);
+        set(led).to(LOW);
         when(button).is(HIGH).then("stopped");
         after(100).then("blink");
     }
