@@ -5,6 +5,7 @@ import kernel.model.component.Actuator;
 import kernel.model.component.Brick;
 import kernel.model.component.Sensor;
 import kernel.model.state.State;
+import kernel.model.state.actions.Action;
 import kernel.model.state.actions.OutputAction;
 import kernel.model.state.transitions.InputWaiting;
 import kernel.model.state.transitions.TimeWaiting;
@@ -85,10 +86,27 @@ public class Generator implements Visitor<StringBuffer> {
 
         // Loop function
         write("void loop(){",3);
-        write("if ((millis() - debounceTime) > debounceDelay) { //Debounce Statement",2,1);
-        for(State state: app.getStates()){
-            state.accept(this);
+        write("if ((millis() - debounceTime) > debounceDelay) { //Debounce Statement",1,1);
+
+        write("debounceTime = millis(); //Update debounce time",2,2);
+
+        //Update sensors values
+        write("//Update sensor values",2,2);
+        for(Brick brick: app.getBricks()){
+            brick.accept(this); // Init all bricks pinMode (INPUT or OUTPUT)
         }
+
+
+        write("switch(state) {",2,2);
+        //Manually setting the numbers of the states because I don't want to touch the model builder for now => Testing purposes
+        //TODO : Do this in the model builder while translating ANTLR
+        for(int i = 1; i < app.getStates().size(); i++){
+            app.getStates().get(i).setNumber(i);
+        }
+        for(State state: app.getStates()){
+            state.accept(this); //Visit state machine
+        }
+        write("} //End of State machine",1,2);
         write("} //End of Debounce Statement",1,1);
         write("} //End of loop() function");
     }
@@ -118,30 +136,44 @@ public class Generator implements Visitor<StringBuffer> {
             write(String.format("pinMode(%d, INPUT);  // %s [Sensor]", sensor.getPin(), sensor.getName()),2,1);
             write(String.format("%sLastState = LOW; //Default latest state of the Sensor, obviously OFF", sensor.getName()),1,1);
         }
+        else if(context == CONTEXTS.LOOP){
+            write(String.format("%sState = digitalRead(%s);",sensor.getName(),sensor.getName()),1,2);
+        }
     }
 
     @Override
     public void visit(State state) {
+        write(String.format("case %d: // [State : %s]", state.getNumber(), state.getName()),1,3);
+        for (Action action : state.getActions()) {
+            action.accept(this);
+        }
 
+        for (Transition transition : state.getTransitions()) {
+            transition.accept(this);
+        }
+        write("break;", 1,4);
     }
 
     @Override
     public void visit(OutputAction action) {
-
+        write(String.format("digitalWrite(%s,%s);", action.getActuator().getName(), action.getValue()),1,4);
     }
 
     @Override
     public void visit(Transition transition) {
-
+        //TODO : On ne rentre PAS ENCORE ici car transition est une Upper-class à InputWaiting && TimeWaiting
     }
 
     @Override
     public void visit(InputWaiting check) {
-
+        write(String.format("if( %sState == %s) {", check.getSensor().getName(), check.getValue()),1,4);
+        write(String.format("state = %d;", check.getNext().getNumber()),1,5);
+        write("}",1,4);
     }
 
     @Override
     public void visit(TimeWaiting noCheck) {
-
+        write(String.format("delay(%d);", noCheck.getTimeout()),1,4);
+        write(String.format("state = %d;", noCheck.getNext().getNumber()),1,4);
     }
 }

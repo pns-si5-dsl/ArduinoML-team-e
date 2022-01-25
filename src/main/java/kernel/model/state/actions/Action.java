@@ -1,4 +1,7 @@
 package kernel.model.state.actions;
 
-public abstract class Action {
+import kernel.generator.Visitable;
+
+public abstract class Action implements Visitable {
+
 }
