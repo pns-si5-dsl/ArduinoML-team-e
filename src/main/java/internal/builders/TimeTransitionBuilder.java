@@ -2,9 +2,10 @@ package internal.builders;
 
 import internal.interfaces.Builder;
 import internal.interfaces.NextStateDefinable;
-import kernel.model.state.transitions.TimeWaiting;
+import kernel.model.state.transitions.Transition;
+import kernel.model.state.transitions.condition.TimeWaiting;
 
-public class TimeTransitionBuilder implements Builder<TimeWaiting>, NextStateDefinable {
+public class TimeTransitionBuilder implements Builder<Transition>, NextStateDefinable {
     /**
      * The application builder.
      */
@@ -42,8 +43,9 @@ public class TimeTransitionBuilder implements Builder<TimeWaiting>, NextStateDef
      * Builds the time transition.
      * @return The built time transition.
      */
-    public TimeWaiting build() {
-        TimeWaiting transition = new TimeWaiting();
+    public Transition build() {
+        Transition transition = new Transition();
+        TimeWaiting check = new TimeWaiting();
 
         // Transition.
         if (timeout <= 0) {
@@ -56,7 +58,7 @@ public class TimeTransitionBuilder implements Builder<TimeWaiting>, NextStateDef
                 )
             );
         }
-        transition.setTimeout(timeout);
+        check.setTimeout(timeout);
 
         // Next state.
         if (nextStateName == null || nextStateName.isEmpty()) {
@@ -80,6 +82,7 @@ public class TimeTransitionBuilder implements Builder<TimeWaiting>, NextStateDef
             );
         }
         transition.setNext(applicationBuilder.getState(nextStateName));
+        transition.setCondition(check);
 
         return transition;
     }

@@ -7,8 +7,8 @@ import kernel.model.component.Sensor;
 import kernel.model.state.State;
 import kernel.model.state.actions.Action;
 import kernel.model.state.actions.OutputAction;
-import kernel.model.state.transitions.InputWaiting;
-import kernel.model.state.transitions.TimeWaiting;
+import kernel.model.state.transitions.condition.InputWaiting;
+import kernel.model.state.transitions.condition.TimeWaiting;
 import kernel.model.state.transitions.Transition;
 
 public class Generator implements Visitor<StringBuffer> {

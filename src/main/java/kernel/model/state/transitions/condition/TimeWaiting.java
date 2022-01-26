@@ -1,12 +1,13 @@
-package kernel.model.state.transitions;
+package kernel.model.state.transitions.condition;
 import kernel.generator.Visitable;
 import kernel.generator.Visitor;
+import kernel.model.state.transitions.Transition;
 
-public class TimeWaiting extends Transition implements Visitable {
+public class TimeWaiting extends Check implements Visitable {
     /**
      * time in ms to wait
      */
-    int timeout;
+    private int timeout;
 
     public int getTimeout() {
         return timeout;

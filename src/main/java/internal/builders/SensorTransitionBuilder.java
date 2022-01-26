@@ -1,27 +1,34 @@
 package internal.builders;
 
 import internal.interfaces.Builder;
+import internal.interfaces.Composable;
 import internal.interfaces.NextStateDefinable;
 import internal.interfaces.SignalCheckable;
+import kernel.model.component.Actuator;
 import kernel.model.component.Sensor;
-import kernel.model.state.transitions.InputWaiting;
+import kernel.model.state.transitions.Transition;
+import kernel.model.state.transitions.condition.Check;
+import kernel.model.state.transitions.condition.CompositeCheck;
+import kernel.model.state.transitions.condition.InputWaiting;
+import kernel.model.values.BINARY_OPERATOR;
 import kernel.model.values.SIGNAL;
 
-public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalCheckable, NextStateDefinable {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class SensorTransitionBuilder implements Builder<Transition>, SignalCheckable, Composable {
     /**
      * The application builder.
      */
     private final ApplicationBuilder applicationBuilder;
 
     /**
-     * The sensor to be monitored.
+     * KEY : The sensor to be monitored.
+     * VALUE : The signal value that triggers the transition.
      */
-    private final Sensor sensor;
-
-    /**
-     * The signal value that triggers the transition.
-     */
-    private SIGNAL signal;
+    private final Map<Sensor, SIGNAL> sensors = new HashMap<>();
+    private Sensor lastSensor;
 
     /**
      * The next state of the transition.
@@ -35,7 +42,7 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
      */
     public SensorTransitionBuilder(ApplicationBuilder applicationBuilder, Sensor sensor) {
         this.applicationBuilder = applicationBuilder;
-        this.sensor = sensor;
+        this.lastSensor = sensor;
     }
 
     /**
@@ -43,8 +50,19 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
      * @param signal The signal value that triggers the transition.
      * @return The builder to complete the transition.
      */
-    public SensorTransitionBuilder is(SIGNAL signal) {
-        this.signal = signal;
+    public Composable is(SIGNAL signal) {
+        this.sensors.put(lastSensor, signal);
+        return this;
+    }
+
+    /**
+     * Continue the definition condition of the transition by adding a new condition to check
+     *
+     * @param sensor the sensor to check
+     */
+    @Override
+    public SignalCheckable and(Sensor sensor) {
+        this.lastSensor = sensor;
         return this;
     }
 
@@ -60,24 +78,34 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
      * Builds the sensor transition.
      * @return The built sensor transition.
      */
-    public InputWaiting build() {
-        InputWaiting transition = new InputWaiting();
+    public Transition build() {
+        Transition transition = new Transition();
+        Check check = null;
 
-        // Sensor.
-        transition.setSensor(sensor);
-
-        // Signal.
-        if (signal == null) {
+        // last sensor assign to a signal ?
+        if (!this.sensors.containsKey(lastSensor)) {
             throw new IllegalArgumentException(
                 String.format(
                     "The '%s' sensor transition of the '%s' state does not define the signal value that triggers the transition. " +
                     "Please use the 'is()' method to define the expected signal value.",
-                    sensor.getName(),
+                    lastSensor.getName(),
                     applicationBuilder.getCurrentStateBuilder().getName()
                 )
             );
         }
-        transition.setValue(signal);
+
+        // Sensors.
+        for (Sensor sensor : this.sensors.keySet()){
+            if(check == null) {
+                check = new InputWaiting(sensors.get(sensor), sensor);
+            } else {
+                check = new CompositeCheck(
+                        BINARY_OPERATOR.AND,
+                        new InputWaiting(sensors.get(sensor), sensor),
+                        check
+                );
+            }
+        }
 
         // Next state.
         if (nextStateName == null || nextStateName.isEmpty()) {
@@ -85,7 +113,7 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
                 String.format(
                     "The '%s' sensor transition of the '%s' state does not define a next state. " +
                     "Please use the 'then()' method to define the next state of this transition.",
-                    sensor.getName(),
+                    sensors.keySet().stream().map(Sensor::getName).collect(Collectors.joining("-")),
                     applicationBuilder.getCurrentStateBuilder().getName()
                 )
             );
@@ -95,7 +123,7 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
                 String.format(
                     "The '%s' sensor transition of the '%s' state defines a next state '%s' which does not exist. " +
                     "Please make sure the '%s' state exists.",
-                    sensor.getName(),
+                    sensors.keySet().stream().map(Sensor::getName).collect(Collectors.joining("-")),
                     applicationBuilder.getCurrentStateBuilder().getName(),
                     nextStateName,
                     nextStateName

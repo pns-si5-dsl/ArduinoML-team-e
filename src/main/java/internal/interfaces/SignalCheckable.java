@@ -8,5 +8,5 @@ public interface SignalCheckable {
      * @param signal The signal value that triggers the transition.
      * @return The builder to complete the transition.
      */
-    NextStateDefinable is(SIGNAL signal);
+    Composable is(SIGNAL signal);
 }
