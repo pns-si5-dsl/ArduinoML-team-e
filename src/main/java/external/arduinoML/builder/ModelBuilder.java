@@ -77,7 +77,7 @@ public class ModelBuilder extends ArduinoMLBaseListener {
     public void exitProgram(ArduinoMLParser.ProgramContext ctx) {
         transitions.forEach((trans, dest) -> {
             State ref = states.get(dest.ref);
-            checkReference(ref, ReferenceType.ACTUATOR, dest.ref, dest.line);
+            checkReference(ref, ReferenceType.STATE, dest.ref, dest.line);
             trans.setNext(ref);
         });
         checkIncorrectModel();
