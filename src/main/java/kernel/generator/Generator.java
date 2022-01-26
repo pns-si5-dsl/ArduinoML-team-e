@@ -30,12 +30,8 @@ public class Generator implements Visitor<StringBuffer> {
 
 
     private void write(String str, int numberLines, int numberTabs){
-        for(int i = 0; i < numberLines; i++){
-            generatedCode.append("\n");
-        }
-        for(int i = 0; i < numberTabs; i++){
-            generatedCode.append("\t");
-        }
+        generatedCode.append("\n".repeat(Math.max(0, numberLines))); //Write n EOL
+        generatedCode.append("\t".repeat(Math.max(0, numberTabs))); //Write n Tabs
         generatedCode.append(String.format("%s",str));
     }
     private void write(String str){
@@ -107,7 +103,7 @@ public class Generator implements Visitor<StringBuffer> {
             state.accept(this); //Visit state machine
         }
         write("} //End of State machine",1,2);
-        write(String.format("delay(%d);",delayTimeAfterStateMachine),1,2);
+        write(String.format("delay(%d); //Delay for hardware synchronization",delayTimeAfterStateMachine),1,2);
         write("} //End of Debounce Statement",1,1);
         write("} //End of loop() function");
     }
@@ -148,7 +144,7 @@ public class Generator implements Visitor<StringBuffer> {
             write(String.format("state = %s; // Default state when entering the state-machine",state.getName()),2,1);
         }
         else if(context == CONTEXTS.LOOP){
-            write(String.format("case %s:", state.getName()),1,3);
+            write(String.format("case %s:", state.getName()),2,3);
             for (Action action : state.getActions()) {
                 action.accept(this);
             }
