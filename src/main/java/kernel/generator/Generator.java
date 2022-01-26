@@ -21,19 +21,17 @@ public class Generator implements Visitor<StringBuffer> {
 
     private final StringBuffer generatedCode;
     private CONTEXTS context; //the context of the generator, so the visitor knows which code to execute
+    private final int delayTimeAfterStateMachine;
 
     public Generator(){
         this.generatedCode = new StringBuffer();
+        delayTimeAfterStateMachine = 250;
     }
 
 
     private void write(String str, int numberLines, int numberTabs){
-        for(int i = 0; i < numberLines; i++){
-            generatedCode.append("\n");
-        }
-        for(int i = 0; i < numberTabs; i++){
-            generatedCode.append("\t");
-        }
+        generatedCode.append("\n".repeat(Math.max(0, numberLines))); //Write n EOL
+        generatedCode.append("\t".repeat(Math.max(0, numberTabs))); //Write n Tabs
         generatedCode.append(String.format("%s",str));
     }
     private void write(String str){
@@ -62,7 +60,16 @@ public class Generator implements Visitor<StringBuffer> {
         write("const int debounceDelay = 50; //Delay for button debounce",3);
         // Static Global Vars
         write("unsigned long debounceTime; //Timer for button debounce");
-        write("int state; //State of the state machine (from 1 to n)",2);
+        write("unsigned long whileTimer; //Timer used in while loops into the state machine");
+        write("enum ENUM_STATE { //States (into an enum) of the state machine",2);
+        String sep ="";
+        for(State state: app.getStates()){
+            write(sep,0,0);
+            state.accept(this);
+            sep = ", ";
+        }
+        write("};");
+        write("ENUM_STATE state; //Current state of the state machine",2);
 
         // Dynamic Constants && Global Vars
         for(Brick brick: app.getBricks()){
@@ -75,10 +82,12 @@ public class Generator implements Visitor<StringBuffer> {
         // Setup function
         write("void setup(){",3);
         write("debounceTime = 0; //Obvious init",1,1);
-        write("state = 1; // 1 is the default state when entering the state-machine",2,1);
+        write("whileTimer = 0; //Obvious Init",1,1);
+        write(""); //EOL
         for(Brick brick: app.getBricks()){
             brick.accept(this); // Init all bricks pinMode (INPUT or OUTPUT)
         }
+        app.getInitial().accept(this); //Init default state
         write("}");
 
         // Finally, we want to do the loop code
@@ -87,26 +96,14 @@ public class Generator implements Visitor<StringBuffer> {
         // Loop function
         write("void loop(){",3);
         write("if ((millis() - debounceTime) > debounceDelay) { //Debounce Statement",1,1);
-
         write("debounceTime = millis(); //Update debounce time",2,2);
 
-        //Update sensors values
-        write("//Update sensor values",2,2);
-        for(Brick brick: app.getBricks()){
-            brick.accept(this); // Init all bricks pinMode (INPUT or OUTPUT)
-        }
-
-
         write("switch(state) {",2,2);
-        //Manually setting the numbers of the states because I don't want to touch the model builder for now => Testing purposes
-        //TODO : Do this in the model builder while translating ANTLR
-        for(int i = 1; i < app.getStates().size(); i++){
-            app.getStates().get(i).setNumber(i);
-        }
         for(State state: app.getStates()){
             state.accept(this); //Visit state machine
         }
         write("} //End of State machine",1,2);
+        write(String.format("delay(%d); //Delay for hardware synchronization",delayTimeAfterStateMachine),1,2);
         write("} //End of Debounce Statement",1,1);
         write("} //End of loop() function");
     }
@@ -121,7 +118,7 @@ public class Generator implements Visitor<StringBuffer> {
             initConstBrick(actuator);
         }
         else if(context == CONTEXTS.SETUP){
-            write(String.format("pinMode(%d, OUTPUT); // %s [Actuator]", actuator.getPin(), actuator.getName()),2,1);
+            write(String.format("pinMode(%s, OUTPUT); // [Actuator, PIN : %d]", actuator.getName(), actuator.getPin()),1,1);
         }
     }
 
@@ -130,28 +127,37 @@ public class Generator implements Visitor<StringBuffer> {
         if(context == CONTEXTS.INIT){
             initConstBrick(sensor);
             write(String.format("int %sState; //Current state of the Sensor (current reading)", sensor.getName()));
-            write(String.format("int %sLastState; //Last state of the Sensor (last registered reading)", sensor.getName()));
+            //write(String.format("int %sLastState; //Last state of the Sensor (last registered reading)", sensor.getName()));
         }
         else if(context == CONTEXTS.SETUP){
-            write(String.format("pinMode(%d, INPUT);  // %s [Sensor]", sensor.getPin(), sensor.getName()),2,1);
-            write(String.format("%sLastState = LOW; //Default latest state of the Sensor, obviously OFF", sensor.getName()),1,1);
-        }
-        else if(context == CONTEXTS.LOOP){
-            write(String.format("%sState = digitalRead(%s);",sensor.getName(),sensor.getName()),1,2);
+            write(String.format("pinMode(%s, INPUT); // [Sensor, PIN : %d]", sensor.getName(), sensor.getPin()),1,1);
+            //write(String.format("%sLastState = LOW; //Default latest state of the Sensor, obviously OFF", sensor.getName()),1,1);
         }
     }
 
     @Override
     public void visit(State state) {
-        write(String.format("case %d: // [State : %s]", state.getNumber(), state.getName()),1,3);
-        for (Action action : state.getActions()) {
-            action.accept(this);
+        if(context == CONTEXTS.INIT) {
+            write(state.getName(),1,1);
         }
+        else if(context == CONTEXTS.SETUP){
+            write(String.format("state = %s; // Default state when entering the state-machine",state.getName()),2,1);
+        }
+        else if(context == CONTEXTS.LOOP){
+            write(String.format("case %s:", state.getName()),2,3);
+            for (Action action : state.getActions()) {
+                action.accept(this);
+            }
 
-        for (Transition transition : state.getTransitions()) {
-            transition.accept(this);
+            //While loop around transitions to cover n transitions
+            write("whileTimer = millis();",1,4);
+            write("while(1) {",1,4);
+            for (Transition transition : state.getTransitions()) {
+                transition.accept(this);
+            }
+            write("}",1,4);
+            write("break;", 1,4);
         }
-        write("break;", 1,4);
     }
 
     @Override
@@ -166,14 +172,18 @@ public class Generator implements Visitor<StringBuffer> {
 
     @Override
     public void visit(InputWaiting check) {
-        write(String.format("if( %sState == %s) {", check.getSensor().getName(), check.getValue()),1,4);
-        write(String.format("state = %d;", check.getNext().getNumber()),1,5);
-        write("}",1,4);
+        write(String.format("%sState = digitalRead(%s);",check.getSensor().getName(),check.getSensor().getName()),1,5);
+        write(String.format("if( %sState == %s) {", check.getSensor().getName(), check.getValue()),1,5);
+        write(String.format("state = %s;", check.getNext().getName()),1,6);
+        write("break;", 1,6);
+        write("}",1,5);
     }
 
     @Override
     public void visit(TimeWaiting noCheck) {
-        write(String.format("delay(%d);", noCheck.getTimeout()),1,4);
-        write(String.format("state = %d;", noCheck.getNext().getNumber()),1,4);
+        write(String.format("if ((millis() - whileTimer) > %d) {;", noCheck.getTimeout()),1,5);
+        write(String.format("state = %s;", noCheck.getNext().getName()),1,6);
+        write("break;", 1,6);
+        write("}",1,5);
     }
 }
