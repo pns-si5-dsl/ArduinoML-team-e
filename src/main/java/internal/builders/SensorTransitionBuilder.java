@@ -4,7 +4,7 @@ import kernel.model.component.Sensor;
 import kernel.model.state.transitions.InputWaiting;
 import kernel.model.values.SIGNAL;
 
-public class TransitionBuilder {
+public class SensorTransitionBuilder implements Builder<InputWaiting> {
     /**
      * The application builder.
      */
@@ -18,18 +18,26 @@ public class TransitionBuilder {
     /**
      * The signal value that triggers the transition.
      */
-    private final SIGNAL signal;
+    private SIGNAL signal;
+
+    /**
+     * The state name associated
+     */
+    private String nextStateName;
 
     /**
      * Constructs a transition builder.
      * @param applicationBuilder The application builder.
      * @param sensor The sensor to be monitored.
-     * @param signal The signal value that triggers the transition.
      */
-    public TransitionBuilder(ApplicationBuilder applicationBuilder, Sensor sensor, SIGNAL signal) {
+    public SensorTransitionBuilder(ApplicationBuilder applicationBuilder, Sensor sensor) {
         this.applicationBuilder = applicationBuilder;
         this.sensor = sensor;
-        this.signal = signal;
+    }
+
+    public SensorTransitionBuilder is(SIGNAL value){
+        this.signal = value;
+        return this;
     }
 
     /**
@@ -37,9 +45,23 @@ public class TransitionBuilder {
      * @param state The target state of the transition.
      */
     public void then(String state) {
+        this.nextStateName = state;
+    }
+
+    public InputWaiting build(){
         InputWaiting transition = new InputWaiting();
+
         transition.setSensor(sensor);
+
+        if(signal == null) throw new IllegalArgumentException("no signal"); //TODO
         transition.setValue(signal);
-        applicationBuilder.addTransitionToCurrentState(transition, state);
+
+        if(nextStateName == null || nextStateName.isEmpty()) throw new IllegalArgumentException("no next state"); //TODO
+        if(!this.applicationBuilder.hasState(nextStateName)) {
+            throw new IllegalArgumentException("bad next state"); //TODO
+        }
+        transition.setNext(this.applicationBuilder.getState(nextStateName));
+
+        return transition;
     }
 }

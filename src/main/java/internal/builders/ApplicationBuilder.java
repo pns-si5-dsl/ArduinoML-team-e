@@ -10,6 +10,7 @@ import kernel.model.state.State;
 import kernel.model.state.actions.Action;
 import kernel.model.state.transitions.Transition;
 
+import java.lang.reflect.Method;
 import java.util.*;
 
 public class ApplicationBuilder {
@@ -23,25 +24,35 @@ public class ApplicationBuilder {
      */
     private final App application;
 
-    /**
-     * The list of transitions.
-     * This list is used to associate transitions with their target state once all states have been constructed.
-     */
-    private final Map<Transition, String> transitions;
+    public final Map<String, StateBuilder> statesMap;
 
     /**
      * The state under construction.
      */
-    private State currentState;
+    private StateBuilder currentStateBuilder;
 
     /**
      * Constructs an application builder.
+     *
      * @param embeddedApplication The embedded application.
      */
     public ApplicationBuilder(EmbeddedApplication embeddedApplication) {
         this.embeddedApplication = embeddedApplication;
         this.application = new App();
-        transitions = new HashMap<>();
+        statesMap = new HashMap<>();
+    }
+
+    /**
+     * fill the stateMap
+     */
+    private void initStates() {
+        for (Method method : embeddedApplication.getClass().getDeclaredMethods()) {
+            Arrays
+                .stream(method.getAnnotationsByType(internal.annotations.State.class))
+                .findFirst()
+                .ifPresent((annotation) -> statesMap.put(method.getName(), new StateBuilder(method.getName())));
+
+        }
     }
 
     /**
@@ -142,10 +153,8 @@ public class ApplicationBuilder {
                     .stream(method.getAnnotationsByType(internal.annotations.State.class))
                     .findFirst()
                     .ifPresent(annotation -> {
-                        // Initialize the state.
-                        State state = new State();
-                        state.setName(method.getName());
-                        currentState = state;
+                        StateBuilder builder = statesMap.get(method.getName());
+                        currentStateBuilder = builder;
 
                         // Build the state.
                         method.setAccessible(true);
@@ -155,61 +164,55 @@ public class ApplicationBuilder {
                             throw new IllegalStateException("An error occurred while building the '" + method.getName() + "' state.", e);
                         }
 
-                        // Add the state.
-                        application.getStates().add(state);
+                        State state = builder.build();
 
                         // Set the initial state.
                         if (annotation.initial()) {
                             application.setInitial(state);
                         }
+
+                        application.getStates().add(state);
                     });
             });
-
-        // For each transition.
-        transitions.forEach((transition, stateName) -> {
-            // Find the state.
-            Optional<State> state = application
-                .getStates()
-                .stream()
-                .filter(s -> s.getName().equals(stateName))
-                .findFirst();
-
-            // Set the target state of the transition.
-            if (state.isPresent()) {
-                transition.setNext(state.get());
-            } else {
-                throw new IllegalStateException("The '" + stateName + "' state does not exist.");
-            }
-        });
     }
 
     /**
      * Adds an action to the current state.
-     * @param action The action to be added.
      */
-    public void addActionToCurrentState(Action action) {
-        currentState.getActions().add(action);
+    public void addActionToCurrentState(Builder<? extends Action> builder) {
+        currentStateBuilder.addAction(builder);
     }
 
     /**
      * Adds a transition to the current state.
-     * @param transition The transition to be added.
-     * @param state The target state of the transition.
      */
-    public void addTransitionToCurrentState(Transition transition, String state) {
-        currentState.getTransitions().add(transition);
-        transitions.put(transition, state);
+    public void addTransitionToCurrentState(Builder<? extends Transition> builder) {
+        currentStateBuilder.addTransition(builder);
     }
 
     /**
      * Builds the application using the embedded DSL.
+     *
      * @return The application built using the embedded DSL.
      */
     public App build() {
         buildApplication();
-        buildSensors();
         buildActuators();
+        buildSensors();
+        initStates();
         buildStates();
         return application;
+    }
+
+    public StateBuilder getCurrentStateBuilder() {
+        return this.currentStateBuilder;
+    }
+
+    public boolean hasState(String stateName) {
+        return this.statesMap.containsKey(stateName);
+    }
+
+    public State getState(String nextStateName) {
+        return this.statesMap.get(nextStateName).getState();
     }
 }

@@ -5,7 +5,7 @@ import kernel.generator.Visitable;
 import kernel.generator.Visitor;
 import kernel.model.state.State;
 
-public class Transition extends Check implements Visitable {
+public class Transition implements Visitable {
     private State next;
 
     public State getNext() {

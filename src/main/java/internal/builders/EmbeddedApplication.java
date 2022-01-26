@@ -36,8 +36,10 @@ public abstract class EmbeddedApplication {
      * @param actuator The actuator to be controlled.
      * @return A builder to complete the instruction.
      */
-    protected InstructionBuilder set(Actuator actuator) {
-        return new InstructionBuilder(applicationBuilder, actuator);
+    protected DigitalActionBuilder set(Actuator actuator) {
+        DigitalActionBuilder builder = new DigitalActionBuilder(actuator);
+        this.applicationBuilder.addActionToCurrentState(builder);
+        return builder;
     }
 
     /**
@@ -45,8 +47,10 @@ public abstract class EmbeddedApplication {
      * @param sensor The sensor to be monitored.
      * @return A builder to complete the transition.
      */
-    protected ConditionalTransitionBuilder when(Sensor sensor) {
-        return new ConditionalTransitionBuilder(applicationBuilder, sensor);
+    protected SensorTransitionBuilder when(Sensor sensor) {
+        SensorTransitionBuilder builder = new SensorTransitionBuilder(applicationBuilder, sensor);
+        this.applicationBuilder.addTransitionToCurrentState(builder);
+        return builder;
     }
 
     /**
@@ -55,7 +59,9 @@ public abstract class EmbeddedApplication {
      * @return The builder to complete the transition.
      */
     protected TimedTransitionBuilder after(int timeout) {
-        return new TimedTransitionBuilder(applicationBuilder, timeout);
+        TimedTransitionBuilder builder = new TimedTransitionBuilder(applicationBuilder, timeout);
+        this.applicationBuilder.addTransitionToCurrentState(builder);
+        return builder;
     }
 
     /**
