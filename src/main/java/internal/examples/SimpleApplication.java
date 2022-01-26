@@ -10,10 +10,10 @@ import kernel.model.component.Sensor;
 
 @ArduinoML()
 public class SimpleApplication extends EmbeddedApplication {
-    @Input(pin=9)
+    @Input(pin = 9)
     Sensor button;
 
-    @Output(pin=12)
+    @Output(pin = 12)
     Actuator led;
 
     @State()
@@ -22,7 +22,7 @@ public class SimpleApplication extends EmbeddedApplication {
         when(button).is(LOW).then("off");
     }
 
-    @State(initial=true)
+    @State(initial = true)
     void off() {
         set(led).to(LOW);
         when(button).is(HIGH).then("on");

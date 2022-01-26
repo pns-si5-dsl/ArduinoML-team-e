@@ -8,37 +8,35 @@ import internal.builders.EmbeddedApplication;
 import kernel.model.component.Actuator;
 import kernel.model.component.Sensor;
 
-@ArduinoML
+@ArduinoML()
 public class MultiStateAlarm extends EmbeddedApplication {
     @Input(pin = 1)
     Sensor button;
 
     @Output(pin = 2)
     Actuator buzzer;
+
     @Output(pin = 3)
     Actuator led;
 
     @State(initial = true)
-    void off(){
+    void off() {
         set(buzzer).to(LOW);
         set(led).to(LOW);
-
-        when(button).is(HIGH).then("on_buzzer");
+        when(button).is(HIGH).then("onBuzzer");
     }
 
-    @State
-    void on_buzzer(){
+    @State()
+    void onBuzzer() {
         set(buzzer).to(HIGH);
         set(led).to(LOW);
-
-        when(button).is(HIGH).then("on_led");
+        when(button).is(HIGH).then("onLed");
     }
 
-    @State
-    void on_led(){
+    @State()
+    void onLed() {
         set(buzzer).to(LOW);
         set(led).to(HIGH);
-
         when(button).is(LOW).then("off");
     }
 }
