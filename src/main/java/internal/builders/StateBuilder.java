@@ -19,20 +19,18 @@ public class StateBuilder {
         state.setName(stateName);
     }
 
-
-
     public State build(){
         state.setActions(
-                actionBuilders
-                    .stream()
-                    .map(Builder::build)
-                    .collect(Collectors.toList())
+            actionBuilders
+                .stream()
+                .map(Builder::build)
+                .collect(Collectors.toList())
         );
         state.setTransitions(
-                transitionBuilders
-                    .stream()
-                    .map(Builder::build)
-                    .collect(Collectors.toList())
+            transitionBuilders
+                .stream()
+                .map(Builder::build)
+                .collect(Collectors.toList())
         );
         return state;
     }
@@ -47,5 +45,9 @@ public class StateBuilder {
 
     public State getState(){
         return state;
+    }
+
+    public String getName() {
+        return state.getName();
     }
 }

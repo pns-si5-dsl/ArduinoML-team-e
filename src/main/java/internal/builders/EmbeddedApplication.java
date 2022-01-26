@@ -40,7 +40,7 @@ public abstract class EmbeddedApplication {
      * @return A builder to complete the instruction.
      */
     protected SignalSettable set(Actuator actuator) {
-        DigitalActionBuilder builder = new DigitalActionBuilder(actuator);
+        DigitalActionBuilder builder = new DigitalActionBuilder(applicationBuilder, actuator);
         this.applicationBuilder.addActionToCurrentState(builder);
         return builder;
     }

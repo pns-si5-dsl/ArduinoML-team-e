@@ -40,11 +40,40 @@ public class TimedTransitionBuilder implements Builder<TimeWaiting>, NextStateDe
     public TimeWaiting build(){
         TimeWaiting transition = new TimeWaiting();
 
-        if(timeout <=0) throw new IllegalArgumentException("bad timeout in state \"" +"\""); //TODO
+        // Transition.
+        if (timeout <= 0) {
+            throw new IllegalArgumentException(
+                String.format(
+                    "The provided timeout (%d) of a timed transition of the '%s' state is invalid. " +
+                    "Please make sure to enter a positive or zero value.",
+                    timeout,
+                    applicationBuilder.getCurrentStateBuilder().getName()
+                )
+            );
+        }
         transition.setTimeout(timeout);
 
-        if(nextStateName == null || nextStateName.isEmpty()) throw new IllegalArgumentException("no next state"); //TODO
-        if(!this.applicationBuilder.hasState(nextStateName)) throw new IllegalArgumentException("bad next state"); //TODO
+        // Next state.
+        if (nextStateName == null || nextStateName.isEmpty()) {
+            throw new IllegalArgumentException(
+                String.format(
+                    "A timed transition of the '%s' state does not define a next state. " +
+                    "Please use the 'then()' method to define the next state of this transition.",
+                    applicationBuilder.getCurrentStateBuilder().getName()
+                )
+            );
+        }
+        if (!this.applicationBuilder.hasState(nextStateName)) {
+            throw new IllegalArgumentException(
+                String.format(
+                    "A timed transition of the '%s' state defines a next state '%s' which does not exist. " +
+                    "Please make sure the '%s' state exists.",
+                    applicationBuilder.getCurrentStateBuilder().getName(),
+                    nextStateName,
+                    nextStateName
+                )
+            );
+        }
         transition.setNext(this.applicationBuilder.getState(nextStateName));
 
         return transition;
