@@ -12,7 +12,9 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -24,7 +26,7 @@ public class Main {
 
         CharStream stream = getCharStream(args);
         App theApp = buildModel(stream);
-        exportToCode(theApp);
+        exportToCode(theApp, args);
     }
 
     private static CharStream getCharStream(String[] args) throws IOException {
@@ -51,10 +53,17 @@ public class Main {
         return builder.build();
     }
 
-    private static void exportToCode(App theApp) {
+    private static void exportToCode(App theApp, String[] args) throws IOException {
+        if (args.length < 2) throw new RuntimeException("no output file name");
+        String fileName = new File(args[0]).getParentFile().getAbsolutePath() + "/" + args[1];
         Visitor<StringBuffer> codeGenerator = new Generator();
         theApp.accept(codeGenerator);
-        System.out.println(codeGenerator.getGeneratedCode());
+        File file = new File(fileName);
+        if (file.createNewFile()) {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+            writer.write(codeGenerator.getGeneratedCode().toString());
+            writer.close();
+        } else throw new RuntimeException(fileName + ": Already exists!");
     }
 
 }
