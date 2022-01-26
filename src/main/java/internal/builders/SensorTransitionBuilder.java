@@ -1,10 +1,12 @@
 package internal.builders;
 
+import internal.interfaces.NextStateDefinable;
+import internal.interfaces.SignalCheckable;
 import kernel.model.component.Sensor;
 import kernel.model.state.transitions.InputWaiting;
 import kernel.model.values.SIGNAL;
 
-public class SensorTransitionBuilder implements Builder<InputWaiting> {
+public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalCheckable, NextStateDefinable {
     /**
      * The application builder.
      */

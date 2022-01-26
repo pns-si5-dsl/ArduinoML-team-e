@@ -1,8 +1,9 @@
 package internal.builders;
 
+import internal.interfaces.NextStateDefinable;
 import kernel.model.state.transitions.TimeWaiting;
 
-public class TimedTransitionBuilder implements Builder<TimeWaiting> {
+public class TimedTransitionBuilder implements Builder<TimeWaiting>, NextStateDefinable {
     /**
      * The application builder.
      */
