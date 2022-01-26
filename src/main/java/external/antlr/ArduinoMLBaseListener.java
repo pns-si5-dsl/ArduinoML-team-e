@@ -112,13 +112,37 @@ public class ArduinoMLBaseListener implements ArduinoMLListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterTimedTransition(ArduinoMLParser.TimedTransitionContext ctx) { }
+	@Override public void enterConditions(ArduinoMLParser.ConditionsContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitTimedTransition(ArduinoMLParser.TimedTransitionContext ctx) { }
+	@Override public void exitConditions(ArduinoMLParser.ConditionsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSensorCondition(ArduinoMLParser.SensorConditionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSensorCondition(ArduinoMLParser.SensorConditionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTimedCondition(ArduinoMLParser.TimedConditionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTimedCondition(ArduinoMLParser.TimedConditionContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

@@ -3,7 +3,7 @@ package external;
 import external.antlr.ArduinoMLLexer;
 import external.antlr.ArduinoMLParser;
 import external.arduinoML.builder.ModelBuilder;
-import external.arduinoML.builder.StopErrorListener;
+import external.arduinoML.StopErrorListener;
 import kernel.generator.Generator;
 import kernel.generator.Visitor;
 import kernel.model.App;

@@ -1,4 +1,4 @@
-package external.arduinoML.builder.exceptions;
+package external.arduinoML.builder;
 
 public enum ReferenceType {
     ACTUATOR("Actuator"),
@@ -7,7 +7,7 @@ public enum ReferenceType {
 
     private final String name;
 
-    private ReferenceType(String name) {
+    ReferenceType(String name) {
         this.name = name;
     }
 

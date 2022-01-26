@@ -73,5 +73,19 @@ public class ArduinoMLBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTimedTransition(ArduinoMLParser.TimedTransitionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitConditions(ArduinoMLParser.ConditionsContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitSensorCondition(ArduinoMLParser.SensorConditionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitTimedCondition(ArduinoMLParser.TimedConditionContext ctx) { return visitChildren(ctx); }
 }

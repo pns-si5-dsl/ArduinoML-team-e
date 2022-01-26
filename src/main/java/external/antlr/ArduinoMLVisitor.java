@@ -65,10 +65,23 @@ public interface ArduinoMLVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTransition(ArduinoMLParser.TransitionContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code timedTransition}
-	 * labeled alternative in {@link ArduinoMLParser#declaration}.
+	 * Visit a parse tree produced by {@link ArduinoMLParser#conditions}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitTimedTransition(ArduinoMLParser.TimedTransitionContext ctx);
+	T visitConditions(ArduinoMLParser.ConditionsContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code sensorCondition}
+	 * labeled alternative in {@link ArduinoMLParser#condition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSensorCondition(ArduinoMLParser.SensorConditionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code timedCondition}
+	 * labeled alternative in {@link ArduinoMLParser#condition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTimedCondition(ArduinoMLParser.TimedConditionContext ctx);
 }

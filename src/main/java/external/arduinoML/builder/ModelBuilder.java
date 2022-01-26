@@ -2,77 +2,40 @@ package external.arduinoML.builder;
 
 import external.antlr.ArduinoMLBaseListener;
 import external.antlr.ArduinoMLParser;
-import external.arduinoML.builder.exceptions.*;
 import kernel.model.App;
 import kernel.model.component.Actuator;
 import kernel.model.component.Sensor;
 import kernel.model.state.State;
 import kernel.model.state.actions.OutputAction;
+import kernel.model.state.transitions.condition.Check;
+import kernel.model.state.transitions.condition.CompositeCheck;
 import kernel.model.state.transitions.condition.InputWaiting;
 import kernel.model.state.transitions.condition.TimeWaiting;
 import kernel.model.state.transitions.Transition;
 import kernel.model.values.SIGNAL;
+import org.antlr.v4.runtime.Token;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import static kernel.model.values.BINARY_OPERATOR.AND;
 
 public class ModelBuilder extends ArduinoMLBaseListener {
 
     private App model;
 
-    private final List<String>            variables   = new ArrayList<>();
-    private final List<Integer>           usedPins    = new ArrayList<>();
-    private final Map<String, Actuator>   actuators   = new HashMap<>();
-    private final Map<String, State>      states      = new HashMap<>();
-    private final Map<String, Sensor>     sensors     = new HashMap<>();
-    private final Map<Transition, TransitionRef> transitions = new HashMap<>();
+    private final Map<String, Actuator>   actuators    = new HashMap<>();
+    private final Map<String, State>      states       = new HashMap<>();
+    private final Map<String, Sensor>     sensors      = new HashMap<>();
+    private final Map<Transition, Token>  transitions  = new HashMap<>();
+    private final SyntacticalErrorHandler errorHandler = new SyntacticalErrorHandler();
 
-    private static class TransitionRef {
-        private final String ref;
-        private final int line;
-        private TransitionRef(String ref, int line) {
-            this.ref = ref;
-            this.line =line;
-        }
-    }
-
-    private State currentState = null;
-
-    private RuntimeException exception = null;
+    private State      currentState      = null;
+    private Transition currentTransition = null;
 
     public App build() throws Exception {
         if (model != null) return model;
-        throw new ModelNotCreatedException();
-    }
-
-    private void addError(Exception e) {
-        if (exception == null) exception = new RuntimeException();
-        exception.addSuppressed(e);
-    }
-
-    private void checkVariableDuplication(String name, int line) {
-        if (variables.contains(name)) {
-            addError(new DuplicateVariableDeclarationException(name, line));
-        } else variables.add(name);
-    }
-
-    private void checkPinDuplication(int pin, int line) {
-        if (usedPins.contains(pin)) {
-            addError(new DuplicatePinAssignmentException(pin, line));
-        } else usedPins.add(pin);
-    }
-
-    private void checkReference(Object ref, ReferenceType type, String name, int line) {
-        if (ref == null)
-            addError(new UndefinedReference(type,name,line));
-    }
-
-    private void checkIncorrectModel() {
-        if (model.getInitial() == null) {
-            addError(new InitialStateUndefinedException());
-        }
+        throw new RuntimeException("Model not created!");
     }
 
     @Override
@@ -83,21 +46,21 @@ public class ModelBuilder extends ArduinoMLBaseListener {
     @Override
     public void exitProgram(ArduinoMLParser.ProgramContext ctx) {
         transitions.forEach((trans, dest) -> {
-            State ref = states.get(dest.ref);
-            checkReference(ref, ReferenceType.STATE, dest.ref, dest.line);
+            State ref = states.get(dest.getText());
+            errorHandler.checkReference(ref, ReferenceType.STATE, dest);
             trans.setNext(ref);
         });
-        checkIncorrectModel();
-        if (exception != null) throw exception;
+        errorHandler.checkIncorrectModel(model);
+        errorHandler.validate();
     }
 
     @Override
     public void enterSensor(ArduinoMLParser.SensorContext ctx) {
-        checkVariableDuplication(ctx.id.getText(), ctx.id.getLine());
+        errorHandler.checkVariableDuplication(ctx.id);
         Sensor sensor = new Sensor();
         sensor.setName(ctx.id.getText());
         int pin = Integer.parseInt(ctx.pin.getText().substring(3));
-        checkPinDuplication(pin, ctx.pin.getLine());
+        errorHandler.checkPinDuplication(ctx.pin);
         sensor.setPin(pin);
         sensors.put(sensor.getName(), sensor);
         model.getBricks().add(sensor);
@@ -105,11 +68,11 @@ public class ModelBuilder extends ArduinoMLBaseListener {
 
     @Override
     public void enterActuator(ArduinoMLParser.ActuatorContext ctx) {
-        checkVariableDuplication(ctx.id.getText(), ctx.id.getLine());
+        errorHandler.checkVariableDuplication(ctx.id);
         Actuator actuator = new Actuator();
         actuator.setName(ctx.id.getText());
         int pin = Integer.parseInt(ctx.pin.getText().substring(3));
-        checkPinDuplication(pin, ctx.pin.getLine());
+        errorHandler.checkPinDuplication(ctx.pin);
         actuator.setPin(pin);
         actuators.put(actuator.getName(), actuator);
         model.getBricks().add(actuator);
@@ -117,7 +80,7 @@ public class ModelBuilder extends ArduinoMLBaseListener {
 
     @Override
     public void enterInitialState(ArduinoMLParser.InitialStateContext ctx) {
-        checkVariableDuplication(ctx.id.getText(), ctx.id.getLine());
+        errorHandler.checkVariableDuplication(ctx.id);
         currentState = new State();
         currentState.setName(ctx.id.getText());
         model.setInitial(currentState);
@@ -126,8 +89,13 @@ public class ModelBuilder extends ArduinoMLBaseListener {
     }
 
     @Override
+    public void exitInitialState(ArduinoMLParser.InitialStateContext ctx) {
+        errorHandler.checkStateTransitions(ctx.id, currentState);
+    }
+
+    @Override
     public void enterPendingState(ArduinoMLParser.PendingStateContext ctx) {
-        checkVariableDuplication(ctx.id.getText(), ctx.id.getLine());
+        errorHandler.checkVariableDuplication(ctx.id);
         currentState = new State();
         currentState.setName(ctx.id.getText());
         model.getStates().add(currentState);
@@ -135,10 +103,15 @@ public class ModelBuilder extends ArduinoMLBaseListener {
     }
 
     @Override
+    public void exitPendingState(ArduinoMLParser.PendingStateContext ctx) {
+        errorHandler.checkStateTransitions(ctx.id, currentState);
+    }
+
+    @Override
     public void enterAction(ArduinoMLParser.ActionContext ctx) {
         OutputAction action = new OutputAction();
         Actuator ref = actuators.get(ctx.id.getText());
-        checkReference(ref, ReferenceType.ACTUATOR,ctx.id.getText(),ctx.id.getLine());
+        errorHandler.checkReference(ref, ReferenceType.ACTUATOR, ctx.id);
         action.setActuator(ref);
         action.setValue(SIGNAL.valueOf(ctx.signal.getText()));
         currentState.getActions().add(action);
@@ -146,20 +119,40 @@ public class ModelBuilder extends ArduinoMLBaseListener {
 
     @Override
     public void enterTransition(ArduinoMLParser.TransitionContext ctx) {
-        InputWaiting transition = new InputWaiting();
-        Sensor ref = sensors.get(ctx.id.getText());
-        checkReference(ref, ReferenceType.SENSOR,ctx.id.getText(),ctx.id.getLine());
-        transition.setSensor(ref);
-        transition.setValue(SIGNAL.valueOf(ctx.signal.getText()));
-        transitions.put(transition, new TransitionRef(ctx.to.getText(), ctx.to.getLine()));
-        currentState.getTransitions().add(transition);
+        currentTransition = new Transition();
+        transitions.put(currentTransition, ctx.to);
+        currentState.getTransitions().add(currentTransition);
     }
 
     @Override
-    public void enterTimedTransition(ArduinoMLParser.TimedTransitionContext ctx) {
-        TimeWaiting transition = new TimeWaiting();
-        transition.setTimeout(Integer.parseInt(ctx.d.getText()));
-        transitions.put(transition, new TransitionRef(ctx.to.getText(), ctx.to.getLine()));
-        currentState.getTransitions().add(transition);
+    public void exitTransition(ArduinoMLParser.TransitionContext ctx) {
+        errorHandler.checkTransition(ctx.to, currentTransition);
+    }
+
+    @Override
+    public void enterSensorCondition(ArduinoMLParser.SensorConditionContext ctx) {
+        InputWaiting condition = new InputWaiting();
+        Sensor ref = sensors.get(ctx.id.getText());
+        errorHandler.checkReference(ref, ReferenceType.SENSOR, ctx.id);
+        condition.setSensor(ref);
+        condition.setValue(SIGNAL.valueOf(ctx.signal.getText()));
+        composeCondition(condition);
+    }
+
+    @Override
+    public void enterTimedCondition(ArduinoMLParser.TimedConditionContext ctx) {
+        TimeWaiting condition = new TimeWaiting();
+        condition.setTimeout(Integer.parseInt(ctx.d.getText()));
+        composeCondition(condition);
+    }
+
+    private void composeCondition(Check condition) {
+        if (currentTransition.getCondition() == null) {
+            currentTransition.setCondition(condition);
+        } else {
+            currentTransition.setCondition(
+                    new CompositeCheck(AND,currentTransition.getCondition(), condition)
+            );
+        }
     }
 }

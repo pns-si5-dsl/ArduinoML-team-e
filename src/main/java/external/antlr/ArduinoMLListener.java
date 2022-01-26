@@ -100,15 +100,37 @@ public interface ArduinoMLListener extends ParseTreeListener {
 	 */
 	void exitTransition(ArduinoMLParser.TransitionContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code timedTransition}
-	 * labeled alternative in {@link ArduinoMLParser#declaration}.
+	 * Enter a parse tree produced by {@link ArduinoMLParser#conditions}.
 	 * @param ctx the parse tree
 	 */
-	void enterTimedTransition(ArduinoMLParser.TimedTransitionContext ctx);
+	void enterConditions(ArduinoMLParser.ConditionsContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code timedTransition}
-	 * labeled alternative in {@link ArduinoMLParser#declaration}.
+	 * Exit a parse tree produced by {@link ArduinoMLParser#conditions}.
 	 * @param ctx the parse tree
 	 */
-	void exitTimedTransition(ArduinoMLParser.TimedTransitionContext ctx);
+	void exitConditions(ArduinoMLParser.ConditionsContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code sensorCondition}
+	 * labeled alternative in {@link ArduinoMLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterSensorCondition(ArduinoMLParser.SensorConditionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code sensorCondition}
+	 * labeled alternative in {@link ArduinoMLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitSensorCondition(ArduinoMLParser.SensorConditionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code timedCondition}
+	 * labeled alternative in {@link ArduinoMLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterTimedCondition(ArduinoMLParser.TimedConditionContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code timedCondition}
+	 * labeled alternative in {@link ArduinoMLParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitTimedCondition(ArduinoMLParser.TimedConditionContext ctx);
 }
