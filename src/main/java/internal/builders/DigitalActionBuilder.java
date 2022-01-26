@@ -1,11 +1,12 @@
 package internal.builders;
 
+import internal.interfaces.SignalSettable;
 import kernel.model.component.Actuator;
 import kernel.model.state.actions.Action;
 import kernel.model.state.actions.OutputAction;
 import kernel.model.values.SIGNAL;
 
-public class DigitalActionBuilder implements Builder<OutputAction> {
+public class DigitalActionBuilder implements Builder<OutputAction>, SignalSettable {
     private final Actuator actuator;
     private SIGNAL signal;
 

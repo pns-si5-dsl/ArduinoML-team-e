@@ -1,5 +1,8 @@
 package internal.builders;
 
+import internal.interfaces.NextStateDefinable;
+import internal.interfaces.SignalCheckable;
+import internal.interfaces.SignalSettable;
 import kernel.model.App;
 import kernel.model.component.Actuator;
 import kernel.model.component.Sensor;
@@ -36,7 +39,7 @@ public abstract class EmbeddedApplication {
      * @param actuator The actuator to be controlled.
      * @return A builder to complete the instruction.
      */
-    protected DigitalActionBuilder set(Actuator actuator) {
+    protected SignalSettable set(Actuator actuator) {
         DigitalActionBuilder builder = new DigitalActionBuilder(actuator);
         this.applicationBuilder.addActionToCurrentState(builder);
         return builder;
@@ -47,7 +50,7 @@ public abstract class EmbeddedApplication {
      * @param sensor The sensor to be monitored.
      * @return A builder to complete the transition.
      */
-    protected SensorTransitionBuilder when(Sensor sensor) {
+    protected SignalCheckable when(Sensor sensor) {
         SensorTransitionBuilder builder = new SensorTransitionBuilder(applicationBuilder, sensor);
         this.applicationBuilder.addTransitionToCurrentState(builder);
         return builder;
@@ -58,7 +61,7 @@ public abstract class EmbeddedApplication {
      * @param timeout The timeout in milliseconds.
      * @return The builder to complete the transition.
      */
-    protected TimedTransitionBuilder after(int timeout) {
+    protected NextStateDefinable after(int timeout) {
         TimedTransitionBuilder builder = new TimedTransitionBuilder(applicationBuilder, timeout);
         this.applicationBuilder.addTransitionToCurrentState(builder);
         return builder;
