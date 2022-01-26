@@ -89,6 +89,7 @@ public class ModelBuilder extends ArduinoMLBaseListener {
     @Override
     public void exitInitialState(ArduinoMLParser.InitialStateContext ctx) {
         model.setInitial(currentState);
+        model.getStates().add(currentState);
         states.put(currentState.getName(), currentState);
     }
 
