@@ -23,6 +23,7 @@ public class ModelBuilder extends ArduinoMLBaseListener {
     private App model;
 
     private final List<String>            variables   = new ArrayList<>();
+    private final List<Integer>           usedPins    = new ArrayList<>();
     private final Map<String, Actuator>   actuators   = new HashMap<>();
     private final Map<String, State>      states      = new HashMap<>();
     private final Map<String, Sensor>     sensors     = new HashMap<>();
@@ -51,10 +52,16 @@ public class ModelBuilder extends ArduinoMLBaseListener {
         exception.addSuppressed(e);
     }
 
-    private void checkDuplicate(String name, int line) {
+    private void checkVariableDuplication(String name, int line) {
         if (variables.contains(name)) {
             addError(new DuplicateVariableDeclarationException(name, line));
-        }
+        } else variables.add(name);
+    }
+
+    private void checkPinDuplication(int pin, int line) {
+        if (usedPins.contains(pin)) {
+            addError(new DuplicatePinAssignmentException(pin, line));
+        } else usedPins.add(pin);
     }
 
     private void checkReference(Object ref, ReferenceType type, String name, int line) {
@@ -86,32 +93,33 @@ public class ModelBuilder extends ArduinoMLBaseListener {
 
     @Override
     public void enterSensor(ArduinoMLParser.SensorContext ctx) {
-        checkDuplicate(ctx.id.getText(), ctx.id.getLine());
+        checkVariableDuplication(ctx.id.getText(), ctx.id.getLine());
         Sensor sensor = new Sensor();
         sensor.setName(ctx.id.getText());
-        sensor.setPin(Integer.parseInt(ctx.pin.getText().substring(3)));
+        int pin = Integer.parseInt(ctx.pin.getText().substring(3));
+        checkPinDuplication(pin, ctx.pin.getLine());
+        sensor.setPin(pin);
         sensors.put(sensor.getName(), sensor);
-        variables.add(sensor.getName());
         model.getBricks().add(sensor);
     }
 
     @Override
     public void enterActuator(ArduinoMLParser.ActuatorContext ctx) {
-        checkDuplicate(ctx.id.getText(), ctx.id.getLine());
+        checkVariableDuplication(ctx.id.getText(), ctx.id.getLine());
         Actuator actuator = new Actuator();
         actuator.setName(ctx.id.getText());
-        actuator.setPin(Integer.parseInt(ctx.pin.getText().substring(3)));
+        int pin = Integer.parseInt(ctx.pin.getText().substring(3));
+        checkPinDuplication(pin, ctx.pin.getLine());
+        actuator.setPin(pin);
         actuators.put(actuator.getName(), actuator);
-        variables.add(actuator.getName());
         model.getBricks().add(actuator);
     }
 
     @Override
     public void enterInitialState(ArduinoMLParser.InitialStateContext ctx) {
-        checkDuplicate(ctx.id.getText(), ctx.id.getLine());
+        checkVariableDuplication(ctx.id.getText(), ctx.id.getLine());
         currentState = new State();
         currentState.setName(ctx.id.getText());
-        variables.add(currentState.getName());
         model.setInitial(currentState);
         model.getStates().add(currentState);
         states.put(currentState.getName(), currentState);
@@ -119,10 +127,9 @@ public class ModelBuilder extends ArduinoMLBaseListener {
 
     @Override
     public void enterPendingState(ArduinoMLParser.PendingStateContext ctx) {
-        checkDuplicate(ctx.id.getText(), ctx.id.getLine());
+        checkVariableDuplication(ctx.id.getText(), ctx.id.getLine());
         currentState = new State();
         currentState.setName(ctx.id.getText());
-        variables.add(currentState.getName());
         model.getStates().add(currentState);
         states.put(currentState.getName(), currentState);
     }

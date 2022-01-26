@@ -3,10 +3,10 @@ package external;
 import external.antlr.ArduinoMLLexer;
 import external.antlr.ArduinoMLParser;
 import external.arduinoML.builder.ModelBuilder;
+import external.arduinoML.builder.StopErrorListener;
 import kernel.generator.Generator;
 import kernel.generator.Visitor;
 import kernel.model.App;
-import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -37,11 +37,11 @@ public class Main {
     private static App buildModel(CharStream stream) throws Exception {
         ArduinoMLLexer lexer   = new ArduinoMLLexer(stream);
         lexer.removeErrorListeners();
-        lexer.addErrorListener(new BaseErrorListener()); //TODO custom error listener
+        lexer.addErrorListener(new StopErrorListener());
 
         ArduinoMLParser parser  = new ArduinoMLParser(new CommonTokenStream(lexer));
         parser.removeErrorListeners();
-        parser.addErrorListener(new BaseErrorListener()); //TODO custom error listener
+        parser.addErrorListener(new StopErrorListener());
 
         ParseTreeWalker walker  = new ParseTreeWalker();
         ModelBuilder builder = new ModelBuilder();
