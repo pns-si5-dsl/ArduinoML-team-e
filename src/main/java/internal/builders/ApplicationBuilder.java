@@ -3,6 +3,7 @@ package internal.builders;
 import internal.annotations.ArduinoML;
 import internal.annotations.Input;
 import internal.annotations.Output;
+import internal.interfaces.Builder;
 import kernel.model.App;
 import kernel.model.component.Actuator;
 import kernel.model.component.Sensor;
@@ -24,7 +25,10 @@ public class ApplicationBuilder {
      */
     private final App application;
 
-    public final Map<String, StateBuilder> statesMap;
+    /**
+     * The state builders of the application.
+     */
+    public final Map<String, StateBuilder> states;
 
     /**
      * The state under construction.
@@ -33,32 +37,18 @@ public class ApplicationBuilder {
 
     /**
      * Constructs an application builder.
-     *
      * @param embeddedApplication The embedded application.
      */
     public ApplicationBuilder(EmbeddedApplication embeddedApplication) {
         this.embeddedApplication = embeddedApplication;
-        this.application = new App();
-        statesMap = new HashMap<>();
-    }
-
-    /**
-     * fill the stateMap
-     */
-    private void initStates() {
-        for (Method method : embeddedApplication.getClass().getDeclaredMethods()) {
-            Arrays
-                .stream(method.getAnnotationsByType(internal.annotations.State.class))
-                .findFirst()
-                .ifPresent((annotation) -> statesMap.put(method.getName(), new StateBuilder(method.getName())));
-
-        }
+        application = new App();
+        states = new HashMap<>();
     }
 
     /**
      * Initializes the application.
      */
-    private void buildApplication() {
+    private void initApplication() {
         if (embeddedApplication.getClass().isAnnotationPresent(ArduinoML.class)) {
             Optional<ArduinoML> annotation = Arrays.stream(embeddedApplication.getClass().getAnnotationsByType(ArduinoML.class)).findFirst();
 
@@ -79,7 +69,7 @@ public class ApplicationBuilder {
     /**
      * Initializes the sensors of the application.
      */
-    private void buildSensors() {
+    private void initSensors() {
         // For each field.
         Arrays
             .stream(embeddedApplication.getClass().getDeclaredFields())
@@ -111,7 +101,7 @@ public class ApplicationBuilder {
     /**
      * Initializes the actuators of the application.
      */
-    private void buildActuators() {
+    private void initActuators() {
         // For each field.
         Arrays
             .stream(embeddedApplication.getClass().getDeclaredFields())
@@ -143,6 +133,20 @@ public class ApplicationBuilder {
     /**
      * Initializes the states of the application.
      */
+    private void initStates() {
+        // For each method.
+        for (Method method : embeddedApplication.getClass().getDeclaredMethods()) {
+            // Annotated as a state.
+            Arrays
+                .stream(method.getAnnotationsByType(internal.annotations.State.class))
+                .findFirst()
+                .ifPresent(annotation -> states.put(method.getName(), new StateBuilder(method.getName())));
+        }
+    }
+
+    /**
+     * Builds the states of the application.
+     */
     private void buildStates() {
         // For each method.
         Arrays
@@ -153,7 +157,7 @@ public class ApplicationBuilder {
                     .stream(method.getAnnotationsByType(internal.annotations.State.class))
                     .findFirst()
                     .ifPresent(annotation -> {
-                        StateBuilder builder = statesMap.get(method.getName());
+                        StateBuilder builder = states.get(method.getName());
                         currentStateBuilder = builder;
 
                         // Build the state.
@@ -177,42 +181,68 @@ public class ApplicationBuilder {
     }
 
     /**
-     * Adds an action to the current state.
+     * Indicates whether the application defines a specific state.
+     * @param stateName The name of the state.
+     * @return {@code true} if the application defines the requested state; {@code false} otherwise.
      */
-    public void addActionToCurrentState(Builder<? extends Action> builder) {
-        currentStateBuilder.addAction(builder);
+    public boolean hasState(String stateName) {
+        return states.containsKey(stateName);
     }
 
     /**
-     * Adds a transition to the current state.
+     * Returns a specific state of the application.
+     * @param stateName The name of the state.
+     * @return The requested state, if found.
      */
-    public void addTransitionToCurrentState(Builder<? extends Transition> builder) {
-        currentStateBuilder.addTransition(builder);
+    public State getState(String stateName) {
+        if (!states.containsKey(stateName)) {
+            throw new IllegalArgumentException(
+                String.format(
+                    "The '%s' state does not exist. " +
+                    "Please make sure to define the '%s' state.",
+                    stateName,
+                    stateName
+                )
+            );
+
+        }
+        return states.get(stateName).getState();
     }
 
     /**
-     * Builds the application using the embedded DSL.
-     *
-     * @return The application built using the embedded DSL.
+     * Returns the current state builder.
+     * @return The current state builder.
+     */
+    public StateBuilder getCurrentStateBuilder() {
+        return currentStateBuilder;
+    }
+
+    /**
+     * Adds an action builder to the current state.
+     * @param actionBuilder The action builder to be added.
+     */
+    public void addActionToCurrentState(Builder<? extends Action> actionBuilder) {
+        currentStateBuilder.addAction(actionBuilder);
+    }
+
+    /**
+     * Adds a transition builder to the current state.
+     * @param transitionBuilder The transition builder to be added.
+     */
+    public void addTransitionToCurrentState(Builder<? extends Transition> transitionBuilder) {
+        currentStateBuilder.addTransition(transitionBuilder);
+    }
+
+    /**
+     * Builds the application.
+     * @return The built application.
      */
     public App build() {
-        buildApplication();
-        buildActuators();
-        buildSensors();
+        initApplication();
+        initActuators();
+        initSensors();
         initStates();
         buildStates();
         return application;
-    }
-
-    public StateBuilder getCurrentStateBuilder() {
-        return this.currentStateBuilder;
-    }
-
-    public boolean hasState(String stateName) {
-        return this.statesMap.containsKey(stateName);
-    }
-
-    public State getState(String nextStateName) {
-        return this.statesMap.get(nextStateName).getState();
     }
 }

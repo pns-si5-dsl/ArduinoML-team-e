@@ -8,7 +8,6 @@ import kernel.model.component.Actuator;
 import kernel.model.component.Sensor;
 import kernel.model.values.SIGNAL;
 
-// TODO: Use an annotation processor at compile time to avoid having to inherit this class manually.
 public abstract class EmbeddedApplication {
     /**
      * The low signal constant.
@@ -31,47 +30,47 @@ public abstract class EmbeddedApplication {
      * Constructs an embedded application.
      */
     protected EmbeddedApplication() {
-        this.applicationBuilder = new ApplicationBuilder(this);
+        applicationBuilder = new ApplicationBuilder(this);
     }
 
     /**
-     * Defines an instruction on an actuator.
+     * Defines a digital action.
      * @param actuator The actuator to be controlled.
-     * @return A builder to complete the instruction.
+     * @return The builder to complete the action.
      */
     protected SignalSettable set(Actuator actuator) {
         DigitalActionBuilder builder = new DigitalActionBuilder(applicationBuilder, actuator);
-        this.applicationBuilder.addActionToCurrentState(builder);
+        applicationBuilder.addActionToCurrentState(builder);
         return builder;
     }
 
     /**
-     * Defines a transition triggered by a sensor.
+     * Defines a sensor transition.
      * @param sensor The sensor to be monitored.
-     * @return A builder to complete the transition.
+     * @return The builder to complete the transition.
      */
     protected SignalCheckable when(Sensor sensor) {
         SensorTransitionBuilder builder = new SensorTransitionBuilder(applicationBuilder, sensor);
-        this.applicationBuilder.addTransitionToCurrentState(builder);
+        applicationBuilder.addTransitionToCurrentState(builder);
         return builder;
     }
 
     /**
-     * Defines a transition triggered by a timer.
-     * @param timeout The timeout in milliseconds.
+     * Defines a time transition.
+     * @param timeout The timeout of the transition (in ms).
      * @return The builder to complete the transition.
      */
     protected NextStateDefinable after(int timeout) {
-        TimedTransitionBuilder builder = new TimedTransitionBuilder(applicationBuilder, timeout);
-        this.applicationBuilder.addTransitionToCurrentState(builder);
+        TimeTransitionBuilder builder = new TimeTransitionBuilder(applicationBuilder, timeout);
+        applicationBuilder.addTransitionToCurrentState(builder);
         return builder;
     }
 
     /**
-     * Builds the application using the embedded DSL.
-     * @return The application built using the embedded DSL.
+     * Builds the application.
+     * @return The built application.
      */
     public App build() {
-        return this.applicationBuilder.build();
+        return applicationBuilder.build();
     }
 }

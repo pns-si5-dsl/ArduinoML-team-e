@@ -1,51 +1,56 @@
 package internal.builders;
 
+import internal.interfaces.Builder;
 import internal.interfaces.NextStateDefinable;
 import kernel.model.state.transitions.TimeWaiting;
 
-public class TimedTransitionBuilder implements Builder<TimeWaiting>, NextStateDefinable {
+public class TimeTransitionBuilder implements Builder<TimeWaiting>, NextStateDefinable {
     /**
      * The application builder.
      */
     private final ApplicationBuilder applicationBuilder;
 
     /**
-     * The timeout in milliseconds.
+     * The timeout of the transition (in ms).
      */
     private final int timeout;
 
-    /***
-     * the state name
+    /**
+     * The next state of the transition.
      */
     private String nextStateName;
 
     /**
-     * Constructs a timed transition builder.
+     * Constructs a time transition builder.
      * @param applicationBuilder The application builder.
-     * @param timeout The timeout in milliseconds.
+     * @param timeout The timeout of the transition (in ms).
      */
-    public TimedTransitionBuilder(ApplicationBuilder applicationBuilder, int timeout) {
+    public TimeTransitionBuilder(ApplicationBuilder applicationBuilder, int timeout) {
         this.applicationBuilder = applicationBuilder;
         this.timeout = timeout;
     }
 
     /**
-     * Define the target state of the transition.
-     * @param state The target state of the transition.
+     * Defines the next state of the transition.
+     * @param nextStateName The next state of the transition.
      */
-    public void then(String state) {
-        this.nextStateName = state;
+    public void then(String nextStateName) {
+        this.nextStateName = nextStateName;
     }
 
-    public TimeWaiting build(){
+    /**
+     * Builds the time transition.
+     * @return The built time transition.
+     */
+    public TimeWaiting build() {
         TimeWaiting transition = new TimeWaiting();
 
         // Transition.
         if (timeout <= 0) {
             throw new IllegalArgumentException(
                 String.format(
-                    "The provided timeout (%d) of a timed transition of the '%s' state is invalid. " +
-                    "Please make sure to enter a positive or zero value.",
+                    "The provided timeout (%d) for the time transition of the '%s' state is invalid. " +
+                    "Please make sure to enter a positive value.",
                     timeout,
                     applicationBuilder.getCurrentStateBuilder().getName()
                 )
@@ -57,16 +62,16 @@ public class TimedTransitionBuilder implements Builder<TimeWaiting>, NextStateDe
         if (nextStateName == null || nextStateName.isEmpty()) {
             throw new IllegalArgumentException(
                 String.format(
-                    "A timed transition of the '%s' state does not define a next state. " +
+                    "The time transition of the '%s' state does not define a next state. " +
                     "Please use the 'then()' method to define the next state of this transition.",
                     applicationBuilder.getCurrentStateBuilder().getName()
                 )
             );
         }
-        if (!this.applicationBuilder.hasState(nextStateName)) {
+        if (!applicationBuilder.hasState(nextStateName)) {
             throw new IllegalArgumentException(
                 String.format(
-                    "A timed transition of the '%s' state defines a next state '%s' which does not exist. " +
+                    "The time transition of the '%s' state defines a next state '%s' which does not exist. " +
                     "Please make sure the '%s' state exists.",
                     applicationBuilder.getCurrentStateBuilder().getName(),
                     nextStateName,
@@ -74,7 +79,7 @@ public class TimedTransitionBuilder implements Builder<TimeWaiting>, NextStateDe
                 )
             );
         }
-        transition.setNext(this.applicationBuilder.getState(nextStateName));
+        transition.setNext(applicationBuilder.getState(nextStateName));
 
         return transition;
     }

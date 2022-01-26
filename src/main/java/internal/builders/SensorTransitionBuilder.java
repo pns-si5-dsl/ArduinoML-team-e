@@ -1,5 +1,6 @@
 package internal.builders;
 
+import internal.interfaces.Builder;
 import internal.interfaces.NextStateDefinable;
 import internal.interfaces.SignalCheckable;
 import kernel.model.component.Sensor;
@@ -23,12 +24,12 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
     private SIGNAL signal;
 
     /**
-     * The state name associated
+     * The next state of the transition.
      */
     private String nextStateName;
 
     /**
-     * Constructs a transition builder.
+     * Constructs a sensor transition builder.
      * @param applicationBuilder The application builder.
      * @param sensor The sensor to be monitored.
      */
@@ -37,20 +38,29 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
         this.sensor = sensor;
     }
 
-    public SensorTransitionBuilder is(SIGNAL value){
-        this.signal = value;
+    /**
+     * Defines the signal value that triggers the transition.
+     * @param signal The signal value that triggers the transition.
+     * @return The builder to complete the transition.
+     */
+    public SensorTransitionBuilder is(SIGNAL signal) {
+        this.signal = signal;
         return this;
     }
 
     /**
-     * Define the target state of the transition.
-     * @param state The target state of the transition.
+     * Define the next state of the transition.
+     * @param nextStateName The next state of the transition.
      */
-    public void then(String state) {
-        this.nextStateName = state;
+    public void then(String nextStateName) {
+        this.nextStateName = nextStateName;
     }
 
-    public InputWaiting build(){
+    /**
+     * Builds the sensor transition.
+     * @return The built sensor transition.
+     */
+    public InputWaiting build() {
         InputWaiting transition = new InputWaiting();
 
         // Sensor.
@@ -80,7 +90,7 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
                 )
             );
         }
-        if (!this.applicationBuilder.hasState(nextStateName)) {
+        if (!applicationBuilder.hasState(nextStateName)) {
             throw new IllegalArgumentException(
                 String.format(
                     "The '%s' sensor transition of the '%s' state defines a next state '%s' which does not exist. " +
@@ -92,7 +102,7 @@ public class SensorTransitionBuilder implements Builder<InputWaiting>, SignalChe
                 )
             );
         }
-        transition.setNext(this.applicationBuilder.getState(nextStateName));
+        transition.setNext(applicationBuilder.getState(nextStateName));
 
         return transition;
     }

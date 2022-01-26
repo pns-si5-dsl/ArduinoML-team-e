@@ -1,24 +1,49 @@
 package internal.builders;
 
+import internal.interfaces.Builder;
 import internal.interfaces.SignalSettable;
 import kernel.model.component.Actuator;
 import kernel.model.state.actions.OutputAction;
 import kernel.model.values.SIGNAL;
 
 public class DigitalActionBuilder implements Builder<OutputAction>, SignalSettable {
+    /**
+     * The application builder.
+     */
     private final ApplicationBuilder applicationBuilder;
+
+    /**
+     * The actuator to be controlled.
+     */
     private final Actuator actuator;
+
+    /**
+     * The signal value to be sent.
+     */
     private SIGNAL signal;
 
+    /**
+     * Constructs a digital action builder.
+     * @param applicationBuilder The application builder.
+     * @param actuator The actuator to be controlled.
+     */
     public DigitalActionBuilder(ApplicationBuilder applicationBuilder, Actuator actuator) {
         this.applicationBuilder = applicationBuilder;
         this.actuator = actuator;
     }
 
-    public void to(SIGNAL value){
-        this.signal = value;
+    /**
+     * Defines the signal value to send to the actuator.
+     * @param signal The signal value to be sent.
+     */
+    public void to(SIGNAL signal) {
+        this.signal = signal;
     }
 
+    /**
+     * Builds the digital action.
+     * @return The built digital action.
+     */
     public OutputAction build() {
         OutputAction action = new OutputAction();
 
