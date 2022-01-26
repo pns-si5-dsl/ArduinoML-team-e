@@ -1,6 +1,8 @@
 package internal;
 
 import internal.examples.BlinkApplication;
+import kernel.generator.Generator;
+import kernel.generator.Visitor;
 import kernel.model.App;
 import kernel.model.component.Sensor;
 
@@ -10,6 +12,7 @@ public class Main {
     public static void main(String[] args) {
         // Build.
         App app = new BlinkApplication().build();
+        exportToCode(app);
 
         // Print.
         System.out.println("Name = " + app.getName());
@@ -29,5 +32,11 @@ public class Main {
         });
         System.out.print("Initial = ");
         Optional.ofNullable(app.getInitial()).ifPresent(state -> System.out.println(state.getName()));
+    }
+
+    private static void exportToCode(App theApp) {
+        Visitor<StringBuffer> codeGenerator = new Generator();
+        theApp.accept(codeGenerator);
+        System.out.println(codeGenerator.getGeneratedCode());
     }
 }
