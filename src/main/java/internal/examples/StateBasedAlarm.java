@@ -17,16 +17,14 @@ public class StateBasedAlarm extends EmbeddedApplication {
     Actuator led;
 
     @State(initial = true)
-    void off(){
+    void off() {
         set(led).to(LOW);
-
         when(button).is(HIGH).then("on");
     }
 
-    @State
-    void on(){
+    @State()
+    void on() {
         set(led).to(HIGH);
-
         when(button).is(HIGH).then("off");
     }
 }

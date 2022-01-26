@@ -10,13 +10,13 @@ import kernel.model.component.Sensor;
 
 @ArduinoML()
 public class BlinkApplication extends EmbeddedApplication {
-    @Input(pin=9)
+    @Input(pin = 9)
     Sensor button;
 
-    @Output(pin=12)
+    @Output(pin = 12)
     Actuator led;
 
-    @State(initial=true)
+    @State(initial = true)
     void stopped() {
         set(led).to(LOW);
         when(button).is(HIGH).then("blink");
