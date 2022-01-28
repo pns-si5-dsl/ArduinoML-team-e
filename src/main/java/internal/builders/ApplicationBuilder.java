@@ -1,21 +1,21 @@
 package internal.builders;
 
 import internal.annotations.ArduinoML;
+import internal.annotations.Initial;
 import internal.annotations.Input;
 import internal.annotations.Output;
 import internal.interfaces.Builder;
 import kernel.model.App;
 import kernel.model.component.Actuator;
+import kernel.model.component.Brick;
 import kernel.model.component.Sensor;
 import kernel.model.state.State;
 import kernel.model.state.actions.Action;
 import kernel.model.state.transitions.Transition;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ApplicationBuilder {
     /**
@@ -37,6 +37,11 @@ public class ApplicationBuilder {
      * The state under construction.
      */
     private StateBuilder currentStateBuilder;
+
+    /**
+     * The pin used by app's output or input
+     */
+    private Map<Integer, Brick> pinRegistered = new HashMap<>();
 
     /**
      * Constructs an application builder.
@@ -91,6 +96,18 @@ public class ApplicationBuilder {
                                 sensor.setPin(annotation.pin());
                                 field.set(embeddedApplication, sensor);
                                 application.getBricks().add(sensor);
+
+                                // check if the pin already attributed
+                                Brick before =  this.pinRegistered.put(sensor.getPin(), sensor);
+                                if(before != null)
+                                    throw new IllegalStateException(
+                                        String.format(
+                                                "The pin '%s' is attributed to multiple bricks ('%s' and '%s').",
+                                                sensor.getPin(),
+                                                before.getName(),
+                                                sensor.getName()
+                                        )
+                                    );
                             } catch (IllegalAccessException e) {
                                 throw new IllegalStateException("An error occurred while building the '" + field.getName() + "' sensor.", e);
                             }
@@ -123,6 +140,18 @@ public class ApplicationBuilder {
                                 actuator.setPin(annotation.pin());
                                 field.set(embeddedApplication, actuator);
                                 application.getBricks().add(actuator);
+
+                                // check if the pin already attributed
+                                Brick before =  this.pinRegistered.put(actuator.getPin(), actuator);
+                                if(before != null)
+                                    throw new IllegalStateException(
+                                            String.format(
+                                                    "The pin '%s' is attributed to multiple bricks ('%s' and '%s').",
+                                                    actuator.getPin(),
+                                                    before.getName(),
+                                                    actuator.getName()
+                                            )
+                                    );
                             } catch (IllegalAccessException e) {
                                 throw new IllegalStateException("An error occurred while building the '" + field.getName() + "' actuator.", e);
                             }
@@ -140,11 +169,45 @@ public class ApplicationBuilder {
         // For each method.
         for (Method method : embeddedApplication.getClass().getDeclaredMethods()) {
             // Annotated as a state.
-            Arrays
-                .stream(method.getAnnotationsByType(internal.annotations.State.class))
-                .findFirst()
-                .ifPresent(annotation -> states.put(method.getName(), new StateBuilder(method.getName())));
+            states.put(method.getName(), new StateBuilder(method.getName()));
         }
+    }
+
+    /**
+     * Identify and register the initial state
+     */
+    private void initInitial() {
+        // Collect method with @Initial annotation
+        List<Method> initialMethods = Arrays
+            .stream(embeddedApplication.getClass().getDeclaredMethods())
+            .filter(methods ->
+                    Arrays.stream(methods.getAnnotationsByType(Initial.class))
+                            .findAny()
+                            .isPresent())
+            .collect(Collectors.toList());
+
+        // Check if an @Initial method is defined
+        if(initialMethods.isEmpty())
+            throw new IllegalArgumentException(
+                String.format(
+                        "The application '%s' does not define a initial state. " +
+                        "Please use the @Initial at the top of the wanted initial state to define it as the one.",
+                        application.getName()
+                )
+            );
+
+        // Check if there is multiple @Initial
+        if(initialMethods.size() > 1)
+            throw new IllegalArgumentException(
+                    String.format(
+                            "The application '%s' must define only one initial state.",
+                            application.getName()
+                    )
+            );
+
+        // Register initial state
+        Method initialOne = initialMethods.remove(0);
+        application.setInitial(this.states.get(initialOne.getName()).getState());
     }
 
     /**
@@ -152,35 +215,23 @@ public class ApplicationBuilder {
      */
     private void buildStates() {
         // For each method.
-        Arrays
-            .stream(embeddedApplication.getClass().getDeclaredMethods())
-            .forEach(method -> {
-                // Annotated as a state.
-                Arrays
-                    .stream(method.getAnnotationsByType(internal.annotations.State.class))
-                    .findFirst()
-                    .ifPresent(annotation -> {
-                        StateBuilder builder = states.get(method.getName());
-                        currentStateBuilder = builder;
+        for(Method method : embeddedApplication.getClass().getDeclaredMethods()){
+            // Annotated as a state.
+            StateBuilder builder = states.get(method.getName());
+            currentStateBuilder = builder;
 
-                        // Build the state.
-                        method.setAccessible(true);
-                        try {
-                            method.invoke(embeddedApplication);
-                        } catch (Exception e) {
-                            throw new IllegalStateException("An error occurred while building the '" + method.getName() + "' state.", e);
-                        }
+            // Build the state.
+            method.setAccessible(true);
+            try {
+                method.invoke(embeddedApplication);
+            } catch (Exception e) {
+                throw new IllegalStateException("An error occurred while building the '" + method.getName() + "' state.", e);
+            }
 
-                        State state = builder.build();
+            State state = builder.build();
 
-                        // Set the initial state.
-                        if (annotation.initial()) {
-                            application.setInitial(state);
-                        }
-
-                        application.getStates().add(state);
-                    });
-            });
+            application.getStates().add(state);
+        }
     }
 
     /**
@@ -245,6 +296,7 @@ public class ApplicationBuilder {
         initActuators();
         initSensors();
         initStates();
+        initInitial();
         buildStates();
         return application;
     }

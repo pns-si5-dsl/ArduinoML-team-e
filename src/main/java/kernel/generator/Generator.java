@@ -7,6 +7,7 @@ import kernel.model.component.Sensor;
 import kernel.model.state.State;
 import kernel.model.state.actions.Action;
 import kernel.model.state.actions.OutputAction;
+import kernel.model.state.transitions.condition.CompositeCheck;
 import kernel.model.state.transitions.condition.InputWaiting;
 import kernel.model.state.transitions.condition.TimeWaiting;
 import kernel.model.state.transitions.Transition;
@@ -174,7 +175,7 @@ public class Generator implements Visitor<StringBuffer> {
     public void visit(InputWaiting check) {
         write(String.format("%sState = digitalRead(%s);",check.getSensor().getName(),check.getSensor().getName()),1,5);
         write(String.format("if( %sState == %s) {", check.getSensor().getName(), check.getValue()),1,5);
-        write(String.format("state = %s;", check.getNext().getName()),1,6);
+//        write(String.format("state = %s;", check.getNext().getName()),1,6);
         write("break;", 1,6);
         write("}",1,5);
     }
@@ -182,8 +183,13 @@ public class Generator implements Visitor<StringBuffer> {
     @Override
     public void visit(TimeWaiting noCheck) {
         write(String.format("if ((millis() - whileTimer) > %d) {;", noCheck.getTimeout()),1,5);
-        write(String.format("state = %s;", noCheck.getNext().getName()),1,6);
+//        write(String.format("state = %s;", noCheck.getNext().getName()),1,6);
         write("break;", 1,6);
         write("}",1,5);
+    }
+
+    @Override
+    public void visit(CompositeCheck check) {
+
     }
 }

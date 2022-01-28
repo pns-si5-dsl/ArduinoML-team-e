@@ -1,4 +1,7 @@
 package kernel.model.state.transitions.condition;
 
-public abstract class Check {
+import kernel.generator.Visitable;
+
+public abstract class Check implements Visitable {
+
 }

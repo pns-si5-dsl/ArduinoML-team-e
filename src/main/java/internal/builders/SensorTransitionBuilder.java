@@ -51,7 +51,15 @@ public class SensorTransitionBuilder implements Builder<Transition>, SignalCheck
      * @return The builder to complete the transition.
      */
     public Composable is(SIGNAL signal) {
-        this.sensors.put(lastSensor, signal);
+        if(this.sensors.put(lastSensor, signal) != null)
+            throw new IllegalArgumentException(
+                    String.format(
+                            "The transition '%s' of the state '%s' use two time or more the sensor '%s'.",
+                            sensors.keySet().stream().map(Sensor::getName).collect(Collectors.joining("-")),
+                            applicationBuilder.getCurrentStateBuilder().getName(),
+                            lastSensor
+                    )
+            );
         return this;
     }
 
@@ -130,6 +138,7 @@ public class SensorTransitionBuilder implements Builder<Transition>, SignalCheck
                 )
             );
         }
+        transition.setCondition(check);
         transition.setNext(applicationBuilder.getState(nextStateName));
 
         return transition;

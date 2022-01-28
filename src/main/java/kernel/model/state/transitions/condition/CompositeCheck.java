@@ -4,7 +4,7 @@ import kernel.generator.Visitable;
 import kernel.generator.Visitor;
 import kernel.model.values.BINARY_OPERATOR;
 
-public class CompositeCheck extends Check implements Visitable {
+public class CompositeCheck extends Check {
     private BINARY_OPERATOR operator;
     private Check left;
     private Check right;

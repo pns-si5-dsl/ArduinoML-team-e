@@ -6,7 +6,7 @@ import kernel.model.component.Sensor;
 import kernel.model.state.transitions.Transition;
 import kernel.model.values.SIGNAL;
 
-public class InputWaiting extends Check implements Visitable {
+public class InputWaiting extends Check {
     private SIGNAL value;
     private Sensor sensor;
 
