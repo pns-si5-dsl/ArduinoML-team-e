@@ -1,0 +1,34 @@
+{
+  "name": "arduino-ml",
+  "displayName": "ArduinoML",
+  "description": "Language support for ArduinoML.",
+  "author": "DSL-team-e",
+  "version": "1.0.0",
+  "keywords": [
+    "arduino",
+    "language",
+    "support",
+    "syntax",
+    "highlighting"
+  ],
+  "categories": [
+    "Programming Languages"
+  ],
+  "license": "UNLICENSED",
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "contributes": {
+    "languages": [{
+      "id": "aml",
+      "aliases": ["ArduinoML", "aml"],
+      "extensions": [".aml"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "aml",
+      "scopeName": "source.aml",
+      "path": "./syntaxes/aml.tmLanguage.json"
+    }]
+  }
+}
