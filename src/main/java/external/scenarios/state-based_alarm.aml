@@ -1,0 +1,15 @@
+// Pushing the button once switch the system in a mode where the LED is switched on.
+// Pushing it again switches it off.
+
+Sensor button on PIN0
+Actuator led on PIN1
+
+initial ledOff {
+    led is LOW
+    when button is HIGH then ledOn
+}
+
+ledOn {
+    led is HIGH
+    when button is HIGH then ledOff
+}

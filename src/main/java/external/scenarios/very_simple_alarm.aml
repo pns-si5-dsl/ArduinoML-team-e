@@ -1,0 +1,17 @@
+// Pushing a button activates a LED and a buzzer.
+// Releasing the button switches the actuators off.
+
+Sensor button on PIN0
+Actuator led on PIN1
+Actuator buzzer on PIN2
+
+initial alarmOff {
+    led is LOW
+    buzzer is LOW
+    when button is HIGH then alarmOn
+}
+alarmOn {
+    led is HIGH
+    buzzer is HIGH
+    when button is LOW then alarmOff
+}

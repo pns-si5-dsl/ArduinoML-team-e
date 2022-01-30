@@ -58,12 +58,16 @@ public class Main {
         String fileName = new File(args[0]).getParentFile().getAbsolutePath() + "/" + args[1];
         Visitor<StringBuffer> codeGenerator = new Generator();
         theApp.accept(codeGenerator);
-        File file = new File(fileName);
-        if (file.createNewFile()) {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-            writer.write(codeGenerator.getGeneratedCode().toString());
-            writer.close();
-        } else throw new RuntimeException(fileName + ": Already exists!");
+        int extPos = fileName.lastIndexOf('.');
+        String fileName1 = fileName.substring(0,extPos);
+        String fileName2 = fileName.substring(extPos);
+        File file = new File(fileName1+fileName2);
+        for (int i = 1; !file.createNewFile(); i++) {
+            file = new File(fileName1 + "_" + i + fileName2);
+        }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+        writer.write(codeGenerator.getGeneratedCode().toString());
+        writer.close();
     }
 
 }

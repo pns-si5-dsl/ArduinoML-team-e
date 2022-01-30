@@ -1,0 +1,24 @@
+// Pushing the button starts the buzz noise.
+// Pushing it again stop the buzzer and switch the LED on.
+// Pushing it again switch the LED off, and makes the system ready to make noise again after one push, and so on.
+
+Sensor button on PIN0
+Actuator buzzer on PIN1
+Actuator led on PIN2
+
+initial state0 {
+    buzzer is LOW
+    led is LOW
+    when button is HIGH then state1
+}
+
+state1 {
+    buzzer is HIGH
+    when button is HIGH then state2
+}
+
+state2 {
+    buzzer is LOW
+    led is HIGH
+    when button is HIGH then state0
+}
