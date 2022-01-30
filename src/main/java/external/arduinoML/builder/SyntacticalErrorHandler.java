@@ -62,7 +62,7 @@ public class SyntacticalErrorHandler {
             if (t.getCondition().getClass().equals(TimeWaiting.class)) temporalCount++;
         }
         if (temporalCount > 1) {
-            addError(token, "Multiple temporal transitions found in state '"+state.getName()+"'!");
+            addError(token, "multiple temporal transitions found in state '"+state.getName()+"'!");
         }
     }
 
@@ -74,7 +74,7 @@ public class SyntacticalErrorHandler {
             if (check.getClass().equals(TimeWaiting.class)) temporalCount++;
         }
         if (temporalCount > 1) {
-            addError(token, "Multiple temporal condition found in transition!");
+            addError(token, "multiple temporal conditions found in transition!");
         }
         // TODO check for check duplication
     }

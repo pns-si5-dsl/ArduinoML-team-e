@@ -23,7 +23,7 @@
     },
     {
       "name": "keyword.operator.aml",
-      "match": " (on|is|when|after|then) "
+      "match": " (on|is|and|when|after|then) "
     },
     {
       "name": "entity.name.tag.aml",

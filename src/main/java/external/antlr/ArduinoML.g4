@@ -18,8 +18,7 @@ declaration     : id=ID 'is' signal=SIGNAL                        #action
                 | conditions 'then' to=ID                         #transition
                 ;
 
-conditions      : condition ('and' conditions)?
-                ;
+conditions      : condition ('and' conditions)?;
 condition       : 'when'  id=ID  'is' signal=SIGNAL               #sensorCondition
                 | 'after' d=LONG 'ms'                             #timedCondition
                 ;
