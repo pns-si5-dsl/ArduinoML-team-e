@@ -1,9 +1,9 @@
 // It will trigger a buzzer if and only if two buttons are pushed at the very same time.
 // Releasing at least one of the button stop the sound.
 
-Sensor b1 on PIN0
-Sensor b2 on PIN1
-Actuator buzzer on PIN2
+Sensor b1 on PIN8
+Sensor b2 on PIN9
+Actuator buzzer on PIN10
 
 initial buzzerOff {
     buzzer is LOW

@@ -1,0 +1,15 @@
+// Alan wants to define a state machine where led1 is switched on after a push on button button1
+// and switched off after 800ms, then waiting again for a new push.
+
+Sensor button1 on PIN8
+Actuator led1 on PIN12
+
+initial ledOff {
+    led1 is LOW
+    when button1 is HIGH then ledOn
+}
+
+ledOn {
+    led1 is HIGH
+    after 800ms then ledOff
+}

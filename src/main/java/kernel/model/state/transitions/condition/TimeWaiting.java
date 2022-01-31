@@ -1,7 +1,5 @@
 package kernel.model.state.transitions.condition;
-import kernel.generator.Visitable;
 import kernel.generator.Visitor;
-import kernel.model.state.transitions.Transition;
 
 public class TimeWaiting extends Check {
     /**

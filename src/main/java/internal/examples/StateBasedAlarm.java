@@ -10,10 +10,10 @@ import kernel.model.component.Sensor;
 
 @ArduinoML()
 public class StateBasedAlarm extends EmbeddedApplication {
-    @Input(pin = 1)
+    @Input(pin = 8)
     Sensor button;
 
-    @Output(pin = 3)
+    @Output(pin = 12)
     Actuator led;
 
     @Initial

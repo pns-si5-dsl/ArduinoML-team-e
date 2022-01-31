@@ -10,7 +10,7 @@ import kernel.model.component.Sensor;
 
 @ArduinoML()
 public class BlinkApplication extends EmbeddedApplication {
-    @Input(pin = 9)
+    @Input(pin = 8)
     Sensor button;
 
     @Output(pin = 12)

@@ -1,6 +1,5 @@
 package kernel.model.state.transitions;
 
-
 import kernel.generator.Visitable;
 import kernel.generator.Visitor;
 import kernel.model.state.State;

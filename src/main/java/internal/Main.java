@@ -1,14 +1,13 @@
 package internal;
 
-import internal.examples.BlinkApplication;
-import internal.examples.VerySimpleAlarm;
+import internal.examples.*;
 import kernel.generator.Generator;
 import kernel.generator.Visitor;
 import kernel.model.App;
 
 public class Main {
     public static void main(String[] args) {
-        App app = new VerySimpleAlarm().build();
+        App app = new BlinkApplication().build();
         exportToCode(app);
     }
 

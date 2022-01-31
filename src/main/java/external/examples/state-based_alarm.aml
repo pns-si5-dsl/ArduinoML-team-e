@@ -1,8 +1,8 @@
 // Pushing the button once switch the system in a mode where the LED is switched on.
 // Pushing it again switches it off.
 
-Sensor button on PIN0
-Actuator led on PIN1
+Sensor button on PIN8
+Actuator led on PIN12
 
 initial ledOff {
     led is LOW

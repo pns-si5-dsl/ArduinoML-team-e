@@ -2,9 +2,9 @@
 // Pushing it again stop the buzzer and switch the LED on.
 // Pushing it again switch the LED off, and makes the system ready to make noise again after one push, and so on.
 
-Sensor button on PIN0
-Actuator buzzer on PIN1
-Actuator led on PIN2
+Sensor button on PIN8
+Actuator buzzer on PIN10
+Actuator led on PIN12
 
 initial state0 {
     buzzer is LOW

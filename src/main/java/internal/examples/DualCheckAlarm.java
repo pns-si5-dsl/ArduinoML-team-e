@@ -10,12 +10,12 @@ import kernel.model.component.Sensor;
 
 @ArduinoML()
 public class DualCheckAlarm extends EmbeddedApplication {
-    @Input(pin = 1)
+    @Input(pin = 8)
     Sensor button1;
-    @Input(pin = 2)
+    @Input(pin = 9)
     Sensor button2;
 
-    @Output(pin = 3)
+    @Output(pin = 12)
     Actuator led;
 
     @Initial

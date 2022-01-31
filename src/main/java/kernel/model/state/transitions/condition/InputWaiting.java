@@ -1,9 +1,7 @@
 package kernel.model.state.transitions.condition;
 
-import kernel.generator.Visitable;
 import kernel.generator.Visitor;
 import kernel.model.component.Sensor;
-import kernel.model.state.transitions.Transition;
 import kernel.model.values.SIGNAL;
 
 public class InputWaiting extends Check {

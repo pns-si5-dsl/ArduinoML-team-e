@@ -11,13 +11,13 @@ import kernel.model.values.SIGNAL;
 
 @ArduinoML()
 public class VerySimpleAlarm extends EmbeddedApplication {
-    @Input(pin = 1)
+    @Input(pin = 8)
     Sensor button;
 
-    @Output(pin = 2)
+    @Output(pin = 10)
     Actuator buzzer;
 
-    @Output(pin = 3)
+    @Output(pin = 12)
     Actuator led;
 
     @Initial

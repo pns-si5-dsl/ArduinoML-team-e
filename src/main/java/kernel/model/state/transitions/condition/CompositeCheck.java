@@ -1,6 +1,5 @@
 package kernel.model.state.transitions.condition;
 
-import kernel.generator.Visitable;
 import kernel.generator.Visitor;
 import kernel.model.values.BINARY_OPERATOR;
 

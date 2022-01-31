@@ -55,7 +55,7 @@ public class Main {
 
     private static void exportToCode(App theApp, String[] args) throws IOException {
         if (args.length < 2) throw new RuntimeException("no output file name");
-        String fileName = new File(args[0]).getParentFile().getAbsolutePath() + "/" + args[1];
+        String fileName = new File(args[0]).getParentFile().getAbsolutePath() + "/" + args[1] + ".ino";
         Visitor<StringBuffer> codeGenerator = new Generator();
         theApp.accept(codeGenerator);
         int extPos = fileName.lastIndexOf('.');
@@ -65,8 +65,9 @@ public class Main {
         for (int i = 1; !file.createNewFile(); i++) {
             file = new File(fileName1 + "_" + i + fileName2);
         }
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(codeGenerator.getGeneratedCode().toString());
+        System.out.println("Wrote generated code to the output file: " + file.getAbsolutePath());
         writer.close();
     }
 

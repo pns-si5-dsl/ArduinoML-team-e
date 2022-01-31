@@ -10,13 +10,13 @@ import kernel.model.component.Sensor;
 
 @ArduinoML()
 public class MultiStateAlarm extends EmbeddedApplication {
-    @Input(pin = 1)
+    @Input(pin = 8)
     Sensor button;
 
-    @Output(pin = 2)
+    @Output(pin = 10)
     Actuator buzzer;
 
-    @Output(pin = 3)
+    @Output(pin = 12)
     Actuator led;
 
     @Initial
@@ -35,6 +35,6 @@ public class MultiStateAlarm extends EmbeddedApplication {
     void onLed() {
         set(buzzer).to(LOW);
         set(led).to(HIGH);
-        when(button).is(LOW).then("off");
+        when(button).is(HIGH).then("off");
     }
 }
