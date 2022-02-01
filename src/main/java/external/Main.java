@@ -55,15 +55,13 @@ public class Main {
 
     private static void exportToCode(App theApp, String[] args) throws IOException {
         if (args.length < 2) throw new RuntimeException("no output file name");
-        String fileName = new File(args[0]).getParentFile().getAbsolutePath() + "/" + args[1] + ".ino";
+        String fileName = new File(args[0]).getParentFile().getAbsolutePath() + "/" + args[1];
+        String extension = ".ino";
         Visitor<StringBuffer> codeGenerator = new Generator();
         theApp.accept(codeGenerator);
-        int extPos = fileName.lastIndexOf('.');
-        String fileName1 = fileName.substring(0,extPos);
-        String fileName2 = fileName.substring(extPos);
-        File file = new File(fileName1+fileName2);
+        File file = new File(fileName+extension);
         for (int i = 1; !file.createNewFile(); i++) {
-            file = new File(fileName1 + "_" + i + fileName2);
+            file = new File(fileName + "(" + i + ")" + extension);
         }
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.write(codeGenerator.getGeneratedCode().toString());
