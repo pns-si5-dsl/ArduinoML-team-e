@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id "application"
 }
 
 group 'org.example'
@@ -22,4 +23,19 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+ext {
+    javaMainClass = "internal.Main"
+}
+
+application {
+    mainClassName = javaMainClass
+}
+
+task compileInternalJavaDslExemple(type: JavaExec) {
+    group = "DSL"
+    description = "Run the compilator of the internal java dsl"
+    classpath = sourceSets.main.runtimeClasspath
+    main = javaMainClass
 }

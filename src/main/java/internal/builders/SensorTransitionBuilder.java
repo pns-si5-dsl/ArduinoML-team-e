@@ -54,10 +54,10 @@ public class SensorTransitionBuilder implements Builder<Transition>, SignalCheck
         if(this.sensors.put(lastSensor, signal) != null)
             throw new IllegalArgumentException(
                     String.format(
-                            "The transition '%s' of the state '%s' use two time or more the sensor '%s'.",
+                            "A transition of the state '%s' use two time or more the sensor '%s'.",
                             sensors.keySet().stream().map(Sensor::getName).collect(Collectors.joining("-")),
                             applicationBuilder.getCurrentStateBuilder().getName(),
-                            lastSensor
+                            lastSensor.getName()
                     )
             );
         return this;
