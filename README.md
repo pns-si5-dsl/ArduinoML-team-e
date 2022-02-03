@@ -3,14 +3,49 @@ This is an experimental project to create the ArduinoML DSL for the Arduino lang
 an embedded DSL made in Java and an external DSL made with the AntLR framework.  
 
 ## Kernel
+Our kernel define our domain model as followed:
+
+![UML domain model](./uml/Domain-model.png?raw=true)
 
 ## Embedded
 ### How does it work
-// TODO
+
+Our embedded DSL is implemented in java.
+Your application class must extend the [EmbeddedApplication](./src/main/java/internal/builders/EmbeddedApplication.java) class and be annotated by the _@ArduinoML_ annotation.
+You can see usage examples in the [examples classes](./src/main/java/internal/examples/).
 
 ### How to run
-// TODO
 
+- Compile all example with graddle :
+
+If you create your application class in the _internal.examples_ pakage, the resulting .ino file will be create in the _./out_ directory after running the following command :
+```sh 
+gradle compileInternalJavaDslExample 
+```
+
+- Create your own Main :
+
+You can add a main in your class like below and the resulting code will be printed in the console.
+```java
+@ArduinoML()
+public class MyApplication extends EmbeddedApplication {
+
+    /////////////////////////////////////
+    //////// YOUR CODE HERE /////////////
+    /////////////////////////////////////
+    
+    public static void main(String[] args) {
+        // build my app
+        App app = new MyApplication().build();
+        // translate my app
+        Visitor<StringBuffer> codeGenerator = new Generator();
+        app.accept(codeGenerator);
+        // print the translation
+        System.out.println(codeGenerator.getGeneratedCode());
+    }
+} 
+```
+ 
 ## External
 
 ### How does it work
