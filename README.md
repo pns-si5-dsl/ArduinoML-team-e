@@ -23,7 +23,8 @@ of the Domain Model by browsing an AST of our DSL.
 The class `src/main/java/external/Main.java` allows to compile a text file written in our DSL into an `.ino` file.  
   
 If you want to add syntax highlighting when editing a file in the ArduinoML DSL,
-you can easily import a customised TextMate Bundle we made in your favorite IDE.  
+you can easily import a customised TextMate Bundle we made in your favorite IDE.
+That TextMate only works for files with a `.aml` extension.  
 
 - JetBrains
 
@@ -46,7 +47,8 @@ To run the external DSL, you have to execute `src/main/java/external/Main.java` 
 - the path of the file to compile
 - the name of the output file
 
-Then, a `.ino` file (named as you wished) will be created in the source file directory.
+Then, a `.ino` file (named as you wished) will be created in the source file directory.  
+A set of examples for the given scenarios is available in `src/main/java/external/examples/`.
 
 # Authors
 - Brilhante João
