@@ -80,6 +80,7 @@ public class ModelBuilder extends ArduinoMLBaseListener {
 
     @Override
     public void enterInitialState(ArduinoMLParser.InitialStateContext ctx) {
+        errorHandler.checkDuplicateInitial(model, ctx.id);
         errorHandler.checkVariableDuplication(ctx.id);
         currentState = new State();
         currentState.setName(ctx.id.getText());

@@ -50,6 +50,12 @@ public class SyntacticalErrorHandler {
             addError(token, type.toString()+" '"+token.getText()+" undefined!");
     }
 
+    public void checkDuplicateInitial(App model, Token token) {
+        if (model.getInitial() != null) {
+            addError(token, "only one initial state must be defined.");
+        }
+    }
+
     void checkIncorrectModel(App model) {
         if (model.getInitial() == null) {
             addError("No initial state was found in the program.");
