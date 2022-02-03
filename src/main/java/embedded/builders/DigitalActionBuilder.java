@@ -1,7 +1,7 @@
-package internal.builders;
+package embedded.builders;
 
-import internal.interfaces.Builder;
-import internal.interfaces.SignalSettable;
+import embedded.interfaces.Builder;
+import embedded.interfaces.SignalSettable;
 import kernel.model.component.Actuator;
 import kernel.model.state.actions.OutputAction;
 import kernel.model.values.SIGNAL;

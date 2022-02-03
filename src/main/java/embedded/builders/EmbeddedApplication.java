@@ -1,8 +1,8 @@
-package internal.builders;
+package embedded.builders;
 
-import internal.interfaces.NextStateDefinable;
-import internal.interfaces.SignalCheckable;
-import internal.interfaces.SignalSettable;
+import embedded.interfaces.NextStateDefinable;
+import embedded.interfaces.SignalCheckable;
+import embedded.interfaces.SignalSettable;
 import kernel.model.App;
 import kernel.model.component.Actuator;
 import kernel.model.component.Sensor;

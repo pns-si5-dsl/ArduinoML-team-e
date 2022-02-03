@@ -1,10 +1,10 @@
-package internal.examples;
+package embedded.examples;
 
-import internal.annotations.ArduinoML;
-import internal.annotations.Initial;
-import internal.annotations.Input;
-import internal.annotations.Output;
-import internal.builders.EmbeddedApplication;
+import embedded.annotations.ArduinoML;
+import embedded.annotations.Initial;
+import embedded.annotations.Input;
+import embedded.annotations.Output;
+import embedded.builders.EmbeddedApplication;
 import kernel.model.component.Actuator;
 import kernel.model.component.Sensor;
 

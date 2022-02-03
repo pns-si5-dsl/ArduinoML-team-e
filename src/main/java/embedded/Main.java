@@ -1,8 +1,7 @@
-package internal;
+package embedded;
 
-import internal.annotations.ArduinoML;
-import internal.builders.EmbeddedApplication;
-import internal.examples.*;
+import embedded.annotations.ArduinoML;
+import embedded.builders.EmbeddedApplication;
 import kernel.generator.Generator;
 import kernel.generator.Visitor;
 import kernel.model.App;

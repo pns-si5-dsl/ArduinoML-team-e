@@ -1,4 +1,4 @@
-package internal.annotations;
+package embedded.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ArduinoML {
-    String name() default "";
+@Target(ElementType.FIELD)
+public @interface Output {
+    int pin();
 }

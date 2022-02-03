@@ -1,7 +1,7 @@
-package internal.builders;
+package embedded.builders;
 
-import internal.interfaces.Builder;
-import internal.interfaces.NextStateDefinable;
+import embedded.interfaces.Builder;
+import embedded.interfaces.NextStateDefinable;
 import kernel.model.state.transitions.Transition;
 import kernel.model.state.transitions.condition.TimeWaiting;
 

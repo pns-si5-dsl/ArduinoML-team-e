@@ -1,4 +1,4 @@
-package internal.builders;
+package embedded.builders;
 
 import kernel.generator.Visitable;
 import kernel.generator.Visitor;

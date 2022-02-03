@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    antlr "org.antlr:antlr4:4.9.3" // use ANTLR version 4testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    antlr 'org.antlr:antlr4:4.9.3'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
 
@@ -26,16 +26,16 @@ test {
 }
 
 ext {
-    javaMainClass = "internal.Main"
+    javaMainClass = 'internal.Main'
 }
 
 application {
     mainClassName = javaMainClass
 }
 
-task compileInternalJavaDslExample(type: JavaExec) {
-    group = "DSL"
-    description = "Run the compilator of the internal java dsl"
+task compileEmbeddedDslExamples(type: JavaExec) {
+    group = 'DSL'
+    description = 'Compile the embedded DSL examples.'
     classpath = sourceSets.main.runtimeClasspath
     main = javaMainClass
 }

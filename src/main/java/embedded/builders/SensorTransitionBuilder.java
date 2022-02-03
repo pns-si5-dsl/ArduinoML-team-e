@@ -1,10 +1,8 @@
-package internal.builders;
+package embedded.builders;
 
-import internal.interfaces.Builder;
-import internal.interfaces.Composable;
-import internal.interfaces.NextStateDefinable;
-import internal.interfaces.SignalCheckable;
-import kernel.model.component.Actuator;
+import embedded.interfaces.Builder;
+import embedded.interfaces.Composable;
+import embedded.interfaces.SignalCheckable;
 import kernel.model.component.Sensor;
 import kernel.model.state.transitions.Transition;
 import kernel.model.state.transitions.condition.Check;

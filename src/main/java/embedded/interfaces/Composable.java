@@ -1,4 +1,4 @@
-package internal.interfaces;
+package embedded.interfaces;
 
 import kernel.model.component.Sensor;
 

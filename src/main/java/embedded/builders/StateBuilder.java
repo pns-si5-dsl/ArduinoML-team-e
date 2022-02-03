@@ -1,6 +1,6 @@
-package internal.builders;
+package embedded.builders;
 
-import internal.interfaces.Builder;
+import embedded.interfaces.Builder;
 import kernel.model.state.State;
 import kernel.model.state.actions.Action;
 import kernel.model.state.transitions.Transition;
