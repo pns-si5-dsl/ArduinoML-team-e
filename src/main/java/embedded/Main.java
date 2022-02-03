@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Main {
-    private static String packageName = "internal.examples";
+    private static String packageName = "embedded.examples";
     private static String outputDir = "./out";
 
     public static void main(String[] args) throws IOException {
