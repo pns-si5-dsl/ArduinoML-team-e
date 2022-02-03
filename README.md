@@ -9,11 +9,11 @@
 ## I. Description
 
 The goal of this project is to implement the ArduinoML language which allows to code simple applications for [Arduino](https://www.arduino.cc/).
-It defines an embedded DSL implemented in [Java](https://www.java.com/fr/) and an external DSL built using the [AntLR](https://www.antlr.org/) framework.
+It defines an embedded DSL implemented in [Java](https://www.java.com/en/) and an external DSL built using the [AntLR](https://www.antlr.org/) framework.
 
 ## II. Kernel
 
-The kernel of our two languages was implemented in [Java](https://www.java.com/fr/) and defines the following domain model:
+The kernel of our two languages was implemented in [Java](https://www.java.com/en/) and defines the following domain model:
 
 ![UML Domain Model](./uml/domain-model.png)
 
@@ -21,7 +21,7 @@ The kernel of our two languages was implemented in [Java](https://www.java.com/f
 
 ### 1. Description
 
-The embedded DSL was implemented in [Java](https://www.java.com/fr/).
+The embedded DSL was implemented in [Java](https://www.java.com/en/).
 
 ### 2. Usage
 
@@ -57,7 +57,7 @@ public class MyApplication extends EmbeddedApplication {
 
 ### 3. Compilation
 
-In order to compile your application and get the corresponding Arduino code, you can add a `main()` method to your application with the following code:
+In order to compile your application, you can add a `main()` method to your application with the following code:
 
 ```java
 @ArduinoML(name = "my-app")
@@ -80,6 +80,8 @@ public class MyApplication extends EmbeddedApplication {
 } 
 ```
 
+> This prints the corresponding Arduino code in the terminal.
+
 ### 4. Examples
 
 - You can find a set of usage examples in the [`embedded.examples`](src/main/java/embedded/examples) package.
@@ -90,7 +92,7 @@ public class MyApplication extends EmbeddedApplication {
 gradle compileEmbeddedDslExamples
 ```
 
-> All application classes located in the [`embedded.examples`](src/main/java/embedded/examples) package will be executed and the resulting Arduino `.ino` files will be placed in the `./out` folder.
+> All application classes located in the [`embedded.examples`](src/main/java/embedded/examples) package will be compiled and the corresponding Arduino `.ino` files will be placed in the `./out` folder.
 
 ## IV. External DSL
 
@@ -121,7 +123,7 @@ ledOn {
 }
 ```
 
-### 3. Execution
+### 3. Compilation
 
 In order to compile your application, you have to execute `main()` method inside the [`Main`](src/main/java/external/Main.java) class passing it two arguments:
 
