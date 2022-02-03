@@ -33,7 +33,7 @@ application {
     mainClassName = javaMainClass
 }
 
-task compileInternalJavaDslExemple(type: JavaExec) {
+task compileInternalJavaDslExample(type: JavaExec) {
     group = "DSL"
     description = "Run the compilator of the internal java dsl"
     classpath = sourceSets.main.runtimeClasspath
