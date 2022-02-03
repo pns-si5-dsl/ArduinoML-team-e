@@ -25,7 +25,7 @@ gradle compileInternalJavaDslExample
 
 - Create your own Main :
 
-You can add a main in your class like below and the resulting code will be printed in the console.
+You can add a main in your class like below. When running, the resulting code will be printed in the console.
 ```java
 @ArduinoML()
 public class MyApplication extends EmbeddedApplication {
